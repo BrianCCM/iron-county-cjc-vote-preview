@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Vote | Battle of the Bands</title>
+<meta name="description" content="Live audience voting for Dancing with the Community Stars: Battle of the Bands, benefiting the Iron County Children's Justice Center.">
+<meta name="theme-color" content="#0E0D12">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:ital,opsz,wght@0,14..32,400..900;1,14..32,400..900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0E0D12;
+  --stage:#17161D;
+  --riser:#201E29;
+  --amp:#2A2733;
+  --line:rgba(247,242,232,0.10);
+  --line-strong:rgba(247,242,232,0.20);
+
+  --red:#C9283C;
+  --red-deep:#8C1C2C;
+  --orange:#E07A2C;
+  --gold:#EFC247;
+  --gold-bright:#FFD95E;
+
+  --text:#F7F2E8;
+  --muted:#A49CA8;
+  --faint:#6F6878;
+
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px;
+  --s6:32px; --s7:48px; --s8:64px;
+  --r-sm:6px; --r-md:12px; --r-lg:18px;
+
+  --e-1:0 1px 2px rgba(0,0,0,0.45);
+  --e-2:0 2px 4px rgba(0,0,0,0.40), 0 8px 18px rgba(0,0,0,0.42);
+  --e-3:0 4px 8px rgba(0,0,0,0.45), 0 18px 38px rgba(0,0,0,0.50);
+  --spring:cubic-bezier(0.34,1.4,0.64,1);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--ink);color:var(--text);
+  font-family:Inter,system-ui,-apple-system,sans-serif;
+  font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased;
+  min-height:100dvh;overflow-x:hidden;
+}
+/* stage lighting + poster grain */
+.field{position:fixed;inset:0;z-index:0;pointer-events:none}
+.field::before{content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(820px 560px at 50% -6%, rgba(201,40,60,0.22), transparent 60%),
+    radial-gradient(900px 620px at 8% 16%, rgba(239,194,71,0.10), transparent 58%),
+    radial-gradient(900px 620px at 94% 24%, rgba(201,40,60,0.12), transparent 58%),
+    linear-gradient(180deg, #211F29 0%, #15141A 38%, #0E0D12 100%);}
+.field::after{content:"";position:absolute;inset:0;opacity:.40;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");}
+/* the poster's side rails, wide screens only */
+.rail{position:fixed;top:0;bottom:0;z-index:0;pointer-events:none;display:none;width:170px;opacity:.78}
+.rail img{width:100%;height:100%;object-fit:contain;object-position:center}
+.rail-l{left:0}.rail-r{right:0}
+@media (min-width:980px){.rail{display:block}}
+@media (min-width:1180px){.rail{width:210px}}
+
+.wrap{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:0 var(--s4) 136px}
+
+h1,h2,h3,.display{font-family:Anton,Impact,sans-serif;font-weight:400;line-height:0.98;
+  letter-spacing:0.004em;text-transform:uppercase;margin:0}
+h1{font-size:clamp(38px,10vw,56px)}
+h2{font-size:clamp(23px,5.6vw,30px)}
+p{margin:0}
+.lede{color:var(--muted);line-height:1.7}
+
+.proto{position:relative;z-index:3;background:var(--gold);color:#17120A;
+  font-size:11.5px;font-weight:700;text-align:center;padding:7px var(--s4);line-height:1.45}
+
+/* ---------- masthead ---------- */
+.mast{position:sticky;top:0;z-index:20;background:rgba(14,13,18,0.86);
+  backdrop-filter:blur(14px) saturate(140%);border-bottom:1px solid var(--line)}
+.mast-in{max-width:560px;margin:0 auto;padding:var(--s3) var(--s4);display:flex;align-items:center;gap:var(--s3)}
+.mark{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1}
+.mark b{font-family:Anton,Impact,sans-serif;font-size:15px;text-transform:uppercase;letter-spacing:0.02em;line-height:1.15}
+.mark span{font-size:11px;color:var(--faint);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#17120A;
+  border-radius:999px;padding:5px 11px;flex-shrink:0;background:var(--gold);text-transform:uppercase;letter-spacing:0.03em}
+.dot{width:6px;height:6px;border-radius:50%;background:#17120A;animation:pulse 2.1s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.75)}}
+
+/* ---------- hero ---------- */
+.hero{text-align:center;padding:0 0 var(--s6)}
+.flames{display:flex;justify-content:space-between;align-items:flex-start;margin:0 -16px var(--s2)}
+.flames img{height:68px;width:auto}
+.flames img:last-child{transform:scaleX(-1)}
+.dwcs{width:min(230px,66%);height:auto;margin:0 auto var(--s3);display:block}
+.botb{width:min(270px,76%);height:auto;margin:0 auto var(--s4);display:block;filter:drop-shadow(0 6px 14px rgba(0,0,0,0.5))}
+.hero h1{margin-bottom:var(--s3)}
+.hero h1 em{font-style:normal;color:var(--gold-bright)}
+.hero .lede{font-size:15.5px;max-width:34ch;margin:0 auto}
+
+.raised{margin:var(--s6) 0 0;padding:var(--s5);border-radius:var(--r-lg);
+  background:linear-gradient(180deg,var(--riser),var(--stage));
+  border:1px solid var(--line-strong);box-shadow:var(--e-2);position:relative;overflow:hidden}
+.raised::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;
+  background:linear-gradient(90deg,var(--red-deep),var(--red) 35%,var(--orange) 68%,var(--gold))}
+.raised .amt{font-family:Anton,Impact,sans-serif;font-size:clamp(42px,12vw,58px);line-height:1;
+  letter-spacing:0.01em;color:var(--gold-bright);display:block;font-variant-numeric:tabular-nums}
+.raised .cap{font-size:13px;color:var(--muted);margin-top:var(--s2)}
+.meter{height:8px;border-radius:999px;background:rgba(247,242,232,0.10);margin-top:var(--s4);overflow:hidden}
+.meter i{display:block;height:100%;border-radius:999px;transform-origin:left center;
+  background:linear-gradient(90deg,var(--red-deep),var(--red) 35%,var(--orange) 68%,var(--gold));
+  transition:transform .9s var(--spring)}
+.meter-row{display:flex;justify-content:space-between;font-size:12px;color:var(--faint);margin-top:7px}
+
+/* ---------- buttons ---------- */
+.btn{display:flex;align-items:center;justify-content:center;gap:var(--s2);width:100%;border:0;
+  cursor:pointer;font-family:inherit;font-size:16px;font-weight:700;padding:17px var(--s5);
+  border-radius:var(--r-md);text-decoration:none;
+  transition:transform .22s var(--spring),background-color .22s ease,opacity .22s ease}
+.btn:focus-visible{outline:2px solid var(--gold-bright);outline-offset:3px}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0) scale(.985)}
+.btn-primary{background:var(--gold);color:#17120A;box-shadow:var(--e-2)}
+.btn-primary:hover{background:var(--gold-bright)}
+.btn-ghost{background:var(--riser);color:var(--text);border:1px solid var(--line-strong)}
+.btn-ghost:hover{background:var(--amp)}
+.btn[disabled]{opacity:.42;cursor:not-allowed;transform:none!important}
+
+/* ---------- section heads, poster style ---------- */
+.sec{margin-top:var(--s7)}
+.sec-head{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s5)}
+.sec-head h2{flex-shrink:0;color:var(--text)}
+.sec-head i{flex:1;height:3px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--gold))}
+.sec-head i:last-child{background:linear-gradient(90deg,var(--gold),transparent)}
+.sec-note{font-size:12.5px;color:var(--faint);line-height:1.6;margin-top:var(--s4);
+  padding:var(--s3) var(--s4);border-left:3px solid var(--red);background:rgba(247,242,232,0.03);
+  border-radius:0 var(--r-sm) var(--r-sm) 0}
+
+/* ---------- leaderboard ---------- */
+.board{display:flex;flex-direction:column;gap:var(--s3);list-style:none;margin:0;padding:0}
+.row{position:relative;display:grid;grid-template-columns:38px 56px 1fr auto;gap:var(--s3);
+  align-items:center;width:100%;text-align:left;padding:var(--s3);border-radius:var(--r-md);
+  background:var(--stage);border:1px solid var(--line);cursor:pointer;font-family:inherit;
+  color:inherit;box-shadow:var(--e-1);overflow:hidden;
+  transition:transform .24s var(--spring),background-color .24s ease,border-color .24s ease}
+.row::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--line-strong)}
+.row:hover{transform:translateY(-2px);background:var(--riser);border-color:var(--line-strong)}
+.row:active{transform:translateY(0) scale(.995)}
+.row:focus-visible{outline:2px solid var(--gold-bright);outline-offset:3px}
+.row.lead{background:linear-gradient(180deg,var(--riser),var(--stage));border-color:rgba(239,194,71,0.34)}
+.row.lead::before{background:linear-gradient(180deg,var(--gold),var(--orange))}
+.rank{font-family:Anton,Impact,sans-serif;font-size:25px;color:var(--faint);text-align:center;
+  line-height:1;font-variant-numeric:tabular-nums}
+.row.lead .rank{color:var(--gold-bright)}
+.ava{width:56px;height:56px;border-radius:var(--r-sm);overflow:hidden;position:relative;background:var(--amp)}
+.ava img{width:100%;height:100%;object-fit:cover;display:block}
+.ava::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.42),transparent 58%)}
+.who{min-width:0}
+.who b{display:block;font-size:16px;font-weight:700;letter-spacing:-0.01em;line-height:1.3;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who small{display:block;font-size:12px;color:var(--faint);line-height:1.5}
+.bar{display:block;height:6px;border-radius:999px;background:rgba(247,242,232,0.08);margin-top:9px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:999px;transform-origin:left center;
+  background:linear-gradient(90deg,var(--red-deep),var(--red) 42%,var(--orange) 74%,var(--gold));
+  transition:transform .8s var(--spring)}
+.go{color:var(--faint);font-size:20px;line-height:1;padding-right:var(--s1);
+  transition:transform .24s var(--spring),color .24s ease}
+.row:hover .go{transform:translateX(3px);color:var(--gold-bright)}
+
+/* ---------- dancer ---------- */
+.back{display:inline-flex;align-items:center;gap:7px;background:none;border:0;color:var(--muted);
+  font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;padding:var(--s3) 0;
+  transition:transform .2s var(--spring),color .2s ease}
+.back:hover{color:var(--text);transform:translateX(-3px)}
+.back:focus-visible{outline:2px solid var(--gold-bright);outline-offset:3px;border-radius:var(--r-sm)}
+
+.stage{display:flex;align-items:center;gap:var(--s4);padding:var(--s5);border-radius:var(--r-lg);
+  background:linear-gradient(180deg,var(--riser),var(--stage));border:1px solid var(--line-strong);
+  box-shadow:var(--e-2);position:relative;overflow:hidden}
+.stage::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;
+  background:linear-gradient(90deg,var(--red-deep),var(--red) 35%,var(--orange) 68%,var(--gold))}
+.portrait{width:112px;height:112px;border-radius:50%;overflow:hidden;flex-shrink:0;
+  border:3px solid var(--gold);background:var(--amp)}
+.portrait img{width:100%;height:100%;object-fit:cover;display:block}
+.stage .who2{min-width:0}
+.stage h2{margin-bottom:var(--s2);word-break:break-word}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:#17120A;
+  background:var(--gold);border-radius:999px;padding:4px 10px;text-transform:uppercase;letter-spacing:0.03em}
+.gap{display:block;font-size:13px;color:var(--muted);margin-top:var(--s2)}
+
+.free{margin-top:var(--s5);padding:var(--s5);border-radius:var(--r-lg);
+  border:1px dashed rgba(239,194,71,0.42);background:rgba(239,194,71,0.05)}
+.free h3{font-size:19px;margin-bottom:6px}
+.free p{font-size:13.5px;color:var(--muted);margin-bottom:var(--s4);line-height:1.6}
+.free.used{border-style:solid;border-color:var(--line-strong);background:rgba(247,242,232,0.03)}
+
+/* ---------- bundles ---------- */
+.bundles{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);margin-top:var(--s4)}
+.bundle{position:relative;padding:var(--s4);border-radius:var(--r-md);text-align:left;cursor:pointer;
+  background:var(--stage);border:1px solid var(--line);color:inherit;font-family:inherit;
+  transition:transform .24s var(--spring),border-color .24s ease,background-color .24s ease}
+.bundle:hover{transform:translateY(-2px);background:var(--riser)}
+.bundle:active{transform:translateY(0) scale(.99)}
+.bundle:focus-visible{outline:2px solid var(--gold-bright);outline-offset:3px}
+.bundle[aria-pressed="true"]{border-color:var(--gold);background:var(--riser);box-shadow:var(--e-2)}
+.bundle .price{font-family:Anton,Impact,sans-serif;font-size:30px;line-height:1;display:block;
+  font-variant-numeric:tabular-nums}
+.bundle .votes{font-size:13px;color:var(--muted);margin-top:5px;display:block}
+.bundle .bonus{font-size:11px;font-weight:700;color:var(--gold-bright);margin-top:7px;display:block}
+.bundle.best::after{content:"Most popular";position:absolute;top:-9px;right:var(--s3);font-size:10.5px;
+  font-weight:700;background:var(--red);color:#fff;padding:3px 9px;border-radius:999px}
+
+/* ---------- fee transparency ---------- */
+.summary{margin-top:var(--s5);padding:var(--s4) var(--s5);border-radius:var(--r-lg);
+  background:var(--stage);border:1px solid var(--line)}
+.ln{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s4);
+  padding:10px 0;font-size:14.5px;border-bottom:1px solid var(--line)}
+.ln span{color:var(--muted)}
+.ln b{font-variant-numeric:tabular-nums;font-weight:600;flex-shrink:0}
+.ln small{display:block;font-size:11.5px;color:var(--faint);line-height:1.45;margin-top:1px}
+.ln.off b{color:var(--faint)}
+.ln.grand{border-bottom:0;border-top:2px solid var(--line-strong);margin-top:var(--s2);padding-top:var(--s4)}
+.ln:has(+ .ln.grand){border-bottom:0}
+.ln.grand span{color:var(--text);font-weight:600}
+.ln.grand b{font-family:Anton,Impact,sans-serif;font-size:30px;line-height:1;color:var(--gold-bright)}
+.net{display:flex;justify-content:space-between;gap:var(--s4);font-size:12.5px;color:var(--faint);
+  padding-top:var(--s3);line-height:1.5}
+.net b{color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
+
+.fee{display:flex;gap:var(--s3);align-items:flex-start;margin-top:var(--s3);padding:var(--s4);
+  border-radius:var(--r-md);background:var(--stage);border:1px solid var(--line);cursor:pointer}
+.fee:hover{background:var(--riser)}
+.fee input{appearance:none;width:21px;height:21px;border-radius:5px;border:1.5px solid var(--line-strong);
+  background:var(--ink);cursor:pointer;flex-shrink:0;margin:1px 0 0;position:relative;
+  transition:background-color .2s ease,border-color .2s ease}
+.fee input:checked{background:var(--gold);border-color:var(--gold)}
+.fee input:checked::after{content:"";position:absolute;left:7px;top:3px;width:5px;height:10px;
+  border:solid #17120A;border-width:0 2px 2px 0;transform:rotate(43deg)}
+.fee input:focus-visible{outline:2px solid var(--gold-bright);outline-offset:3px}
+.fee div{font-size:13.5px;line-height:1.55}
+.fee b{display:block;font-size:14.5px;font-weight:600;margin-bottom:2px}
+.fee span{color:var(--faint)}
+.cash{margin-top:var(--s3);padding:var(--s3) var(--s4);border-radius:var(--r-md);
+  background:rgba(201,40,60,0.09);border:1px solid rgba(201,40,60,0.30);
+  font-size:12.5px;color:var(--muted);line-height:1.6}
+.cash b{color:var(--text);font-weight:700}
+
+/* ---------- pay ---------- */
+.paylist{display:flex;flex-direction:column;gap:var(--s3);margin-top:var(--s5)}
+.wallets{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)}
+.pay{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;height:52px;border:0;
+  border-radius:10px;cursor:pointer;font-family:inherit;padding:0 var(--s4);
+  transition:transform .22s var(--spring),background-color .22s ease,opacity .22s ease}
+.pay:hover{transform:translateY(-2px)}
+.pay:active{transform:translateY(0) scale(.985)}
+.pay:focus-visible{outline:2px solid var(--gold-bright);outline-offset:3px}
+.pay[disabled]{opacity:.5;cursor:not-allowed;transform:none!important}
+.pay svg{display:block;fill:currentColor;width:auto;flex-shrink:0}
+.pay .word{font-size:20px;font-weight:500;letter-spacing:-0.01em;line-height:1;
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',Inter,sans-serif}
+.pay-apple{background:#fff;color:#000}
+.pay-apple:hover{background:#EDEDED}
+.pay-apple svg{height:22px;margin-top:-2px}
+.pay-google{background:#fff;color:#000}
+.pay-google:hover{background:#EDEDED}
+.pay-google svg{height:20px}
+.pay-venmo{background:#008CFF;color:#fff}
+.pay-venmo:hover{background:#0A7CDE}
+.pay-venmo svg{height:15px}
+.pay-venmo .word{font-size:16px;font-weight:600}
+.or{display:flex;align-items:center;gap:var(--s3);color:var(--faint);font-size:12px;margin:var(--s2) 0}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.pay-note{font-size:12px;color:var(--faint);text-align:center;margin-top:var(--s4);line-height:1.6}
+.venmo-box{margin-top:var(--s4);padding:var(--s5);border-radius:var(--r-lg);background:var(--stage);
+  border:1px solid var(--line-strong)}
+.venmo-box h3{font-size:18px;margin-bottom:var(--s2)}
+.code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:28px;font-weight:700;
+  letter-spacing:0.08em;color:var(--gold-bright);text-align:center;padding:var(--s4);
+  border-radius:var(--r-md);background:var(--ink);border:1px dashed rgba(239,194,71,0.42);margin:var(--s4) 0}
+
+/* ---------- done ---------- */
+.done{text-align:center;padding:var(--s8) 0 var(--s6)}
+.tick{width:76px;height:76px;border-radius:50%;background:var(--gold);color:#17120A;display:flex;
+  align-items:center;justify-content:center;margin:0 auto var(--s5);font-size:37px;
+  box-shadow:var(--e-2);animation:pop .5s var(--spring) both}
+@keyframes pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+.done h2{margin-bottom:var(--s3)}
+.done .lede{font-size:15px;max-width:34ch;margin:0 auto var(--s6)}
+.tally{display:inline-flex;align-items:baseline;gap:var(--s3);padding:var(--s4) var(--s5);
+  border-radius:var(--r-lg);background:var(--riser);border:1px solid var(--line-strong);margin-bottom:var(--s6)}
+.tally b{font-family:Anton,Impact,sans-serif;font-size:40px;color:var(--gold-bright);line-height:1;
+  font-variant-numeric:tabular-nums}
+.tally span{font-size:13.5px;color:var(--muted);text-align:left}
+
+/* ---------- footer ---------- */
+.foot{margin-top:var(--s8);padding-top:var(--s5);border-top:1px solid var(--line);
+  color:var(--faint);font-size:12.5px;line-height:1.8;text-align:center}
+.foot .bill{font-family:Anton,Impact,sans-serif;font-size:19px;color:var(--text);
+  text-transform:uppercase;letter-spacing:0.01em;line-height:1.2;margin-bottom:var(--s3)}
+.foot .when{color:var(--muted);font-weight:600;font-size:13px}
+.foot a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(239,194,71,0.35)}
+.foot a:hover{color:var(--gold-bright)}
+.foot a:focus-visible{outline:2px solid var(--gold-bright);outline-offset:2px}
+.foot .cjc{margin-top:var(--s4);padding-top:var(--s4);border-top:1px solid var(--line)}
+
+/* ---------- sticky ---------- */
+.sticky{position:fixed;left:0;right:0;bottom:0;z-index:30;
+  padding:var(--s3) var(--s4) calc(var(--s3) + env(safe-area-inset-bottom));
+  background:rgba(14,13,18,0.92);backdrop-filter:blur(16px) saturate(140%);border-top:1px solid var(--line)}
+.sticky-in{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:var(--s4)}
+.sticky .mine{font-size:11.5px;color:var(--faint);line-height:1.25;flex-shrink:0}
+.sticky .mine b{display:block;font-size:20px;color:var(--text);font-family:Anton,Impact,sans-serif;
+  line-height:1;font-variant-numeric:tabular-nums}
+
+.view{display:none}
+.view.on{display:block;animation:slide .34s var(--spring) both}
+@keyframes slide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="field" aria-hidden="true"></div>
+<div class="rail rail-l" aria-hidden="true"><img src="../images/art/art-guitar-left.webp" alt=""></div>
+<div class="rail rail-r" aria-hidden="true"><img src="../images/art/art-guitar-right.webp" alt=""></div>
+
+<div class="proto">Prototype for review. Real lineup, photos lifted from the event poster. No real payments are processed.</div>
+
+<header class="mast">
+  <div class="mast-in">
+    <div class="mark"><b>Battle of the Bands</b><span>Dancing with the Community Stars</span></div>
+    <span class="live"><i class="dot"></i>Voting open</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ============ HOME ============ -->
+  <section class="view on" id="v-home">
+    <div class="hero">
+      <div class="flames" aria-hidden="true">
+        <img src="../images/art/art-flames-tl.webp" alt="">
+        <img src="../images/art/art-flames-tl.webp" alt="">
+      </div>
+      <img class="dwcs" src="../images/art/logo-dwcs.webp" alt="Dancing with the Community Stars">
+      <img class="botb" src="../images/art/logo-botb.webp" alt="Battle of the Bands">
+      <h1>Every dollar<br>is <em>a vote</em></h1>
+      <p class="lede">Back your community star. Every dollar you give is one vote, and every dollar goes to the Children's Justice Center.</p>
+      <div class="raised">
+        <span class="amt" id="raised">$0</span>
+        <p class="cap">raised tonight for the Children's Justice Center</p>
+        <div class="meter"><i id="meter"></i></div>
+        <div class="meter-row"><span>Tonight's goal</span><span id="goal">$120,000</span></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><i></i><h2>The lineup</h2><i></i></div>
+      <ul class="board" id="board"></ul>
+      <p class="sec-note">Bars show each dancer's position against the leader. Dollar totals stay hidden until the finale, so nobody runs away with it and every table keeps giving.</p>
+    </div>
+
+    <footer class="foot">
+      <p class="bill">Dancing with the Community Stars</p>
+      <p class="when">Monday, November 17 &middot; Doors 6:00 PM &middot; Show 7:00 PM</p>
+      Heritage Center Theatre, 105 N 100 E, Cedar City<br>
+      Tickets $15 at State Bank, ERA Realty Center or any Community Star.<br>
+      Questions? <a href="tel:4355901317">Jennifer Davis, 435-590-1317</a>
+      <div class="cjc">
+        Presented by Friends of the Iron County Children's Justice Center, a registered 501(c)(3).<br>
+        All proceeds go to the Children's Justice Center. Where small voices are heard.
+      </div>
+    </footer>
+  </section>
+
+  <!-- ============ DANCER ============ -->
+  <section class="view" id="v-dancer">
+    <button class="back" data-go="home">&larr; The lineup</button>
+    <div class="stage">
+      <div class="portrait"><img id="d-img" alt="" width="112" height="112"></div>
+      <div class="who2">
+        <h2 id="d-name">Dancer</h2>
+        <span class="pill" id="d-rank">#1</span>
+        <span class="gap" id="d-gap">Leading tonight</span>
+      </div>
+    </div>
+
+    <div class="free" id="freebox">
+      <h3 id="free-h">Your free vote</h3>
+      <p id="free-p">Everyone in the room gets one vote on the house. No payment, no sign up.</p>
+      <button class="btn btn-ghost" id="free-btn">Cast my free vote</button>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><i></i><h2>Add votes</h2><i></i></div>
+      <div class="bundles" id="bundles"></div>
+
+      <div class="summary" id="summary" hidden>
+        <div class="ln"><span id="s-votes">Votes</span><b id="s-amt">$0.00</b></div>
+        <div class="ln" id="s-feeline"><span>Card processing fee<small id="s-feenote">Cards and digital wallets only</small></span><b id="s-fee">$0.00</b></div>
+        <div class="ln grand"><span>Total</span><b id="s-total">$0.00</b></div>
+        <div class="net"><span id="s-netlabel">The Center receives</span><b id="s-net">$0.00</b></div>
+      </div>
+
+      <label class="fee" for="feechk">
+        <input type="checkbox" id="feechk" checked>
+        <div>
+          <b>Cover the processing fee</b>
+          <span id="feelabel">Adds the card fee on top so the Center keeps your full gift.</span>
+        </div>
+      </label>
+
+      <p class="cash"><b>No fee on cash or checks.</b> The fee above only applies to cards and digital wallets. Pay a volunteer at one of the tables and every dollar reaches the Center.</p>
+
+      <button class="btn btn-primary" id="to-pay" style="margin-top:var(--s5)" disabled>Choose an amount</button>
+    </div>
+  </section>
+
+  <!-- ============ PAY ============ -->
+  <section class="view" id="v-pay">
+    <button class="back" data-go="dancer">&larr; Back</button>
+    <div style="padding:var(--s4) 0 0">
+      <h2>Checkout</h2>
+      <p class="lede" style="margin-top:var(--s3);font-size:15px" id="pay-sum">Votes for your dancer.</p>
+    </div>
+
+    <div class="summary">
+      <div class="ln"><span id="p-votes">Votes</span><b id="p-amt">$0.00</b></div>
+      <div class="ln" id="p-feeline"><span>Card processing fee<small id="p-feenote">Cards and digital wallets only</small></span><b id="p-fee">$0.00</b></div>
+      <div class="ln grand"><span>Total</span><b id="p-total">$0.00</b></div>
+      <div class="net"><span id="p-netlabel">The Center receives</span><b id="p-net">$0.00</b></div>
+    </div>
+
+    <div class="paylist">
+      <button class="pay pay-apple" data-pay="apple" aria-label="Pay with Apple Pay"></button>
+      <div class="wallets">
+        <button class="pay pay-google" data-pay="google" aria-label="Pay with Google Pay"></button>
+        <button class="pay pay-venmo" data-pay="venmo" aria-label="Pay with Venmo"></button>
+      </div>
+      <div class="or">or</div>
+      <button class="btn btn-ghost" data-pay="card">Pay with card</button>
+    </div>
+    <p class="pay-note">Card payments are handled by Square. The Center never sees your card number.</p>
+
+    <div class="venmo-box" id="venmo" hidden>
+      <h3>Two quick steps</h3>
+      <p class="lede" style="font-size:13.5px">Venmo cannot tell our site when a payment lands, so your reference code is what matches it up. Leave it in the note.</p>
+      <div class="code" id="vcode">VOTE-0000</div>
+      <button class="pay pay-venmo" data-pay="venmo-open"><span class="word">Open Venmo</span></button>
+      <button class="btn btn-ghost" data-pay="venmo-sent" style="margin-top:var(--s3)">I sent it</button>
+      <p class="pay-note" style="margin-top:var(--s4)">Your votes post right away and a volunteer confirms them against the Venmo feed.</p>
+    </div>
+  </section>
+
+  <!-- ============ DONE ============ -->
+  <section class="view" id="v-done">
+    <div class="done">
+      <div class="tick">&#10003;</div>
+      <h2 id="done-h">Votes counted</h2>
+      <p class="lede" id="done-p">Thank you for backing a child in Iron County tonight.</p>
+      <div class="tally"><b id="done-n">0</b><span>votes for<br><strong id="done-d" style="color:var(--text);font-weight:700">your dancer</strong></span></div>
+      <button class="btn btn-primary" data-go="home">Back to the lineup</button>
+      <p class="pay-note" style="margin-top:var(--s5)">A receipt is on its way to your email for your tax records.</p>
+    </div>
+  </section>
+
+</div>
+
+<div class="sticky" id="sticky">
+  <div class="sticky-in">
+    <div class="mine"><b id="my-votes">0</b>your votes</div>
+    <button class="btn btn-primary" data-go="home" style="flex:1">Back to the lineup</button>
+  </div>
+</div>
+
+<script src="../shared/event.js"></script>
+<script src="../shared/wallets.js"></script>
+<script>
+const { EVENT, DANCERS, BUNDLES, feeFor, photo, money, plain } = CJC;
+const $ = s => document.querySelector(s);
+const S = {
+  dancer:null, bundle:null, coverFee:true,
+  free: localStorage.getItem('cjc_free') === '1',
+  mine: Number(localStorage.getItem('cjc_mine') || 0)
+};
+const sorted = () => [...DANCERS].sort((a,b) => b.votes - a.votes);
+const raised = () => DANCERS.reduce((s,d) => s + d.votes, 0);
+
+function go(v){
+  document.querySelectorAll('.view').forEach(e => e.classList.remove('on'));
+  $('#v-' + v).classList.add('on');
+  $('#sticky').style.display = (v === 'home') ? 'none' : 'block';
+  window.scrollTo({ top:0, behavior:'instant' });
+}
+
+function drawBoard(){
+  const list = sorted(), lead = list[0].votes;
+  $('#board').innerHTML = list.map((d,i) => `
+    <li><button class="row ${i===0?'lead':''}" data-id="${d.id}">
+      <span class="rank">${i+1}</span>
+      <span class="ava"><img src="${photo(d)}" alt="" width="56" height="56" loading="lazy"></span>
+      <span class="who">
+        <b>${d.name}</b>
+        <span class="bar"><i style="transform:scaleX(${Math.max(0.08, d.votes/lead).toFixed(3)})"></i></span>
+      </span>
+      <span class="go">&rsaquo;</span>
+    </button></li>`).join('');
+  const r = raised();
+  $('#raised').textContent = plain(r);
+  $('#meter').style.transform = 'scaleX(' + Math.min(1, r/EVENT.goal).toFixed(3) + ')';
+}
+
+function openDancer(id){
+  S.dancer = DANCERS.find(d => d.id === id);
+  S.bundle = null;
+  const list = sorted(), i = list.findIndex(d => d.id === id);
+  $('#d-img').src = photo(S.dancer);
+  $('#d-img').alt = S.dancer.name;
+  $('#d-name').textContent = S.dancer.name;
+  $('#d-rank').textContent = '#' + (i+1) + ' tonight';
+  $('#d-gap').textContent = i === 0 ? 'Leading the lineup' : 'Chasing ' + list[i-1].name.split(' ')[0];
+  drawFree(); drawBundles(); recalc();
+  go('dancer');
+}
+
+function drawFree(){
+  const box = $('#freebox');
+  box.classList.toggle('used', S.free);
+  $('#free-h').textContent = S.free ? 'Free vote used' : 'Your free vote';
+  $('#free-p').textContent = S.free
+    ? 'You have already cast the free vote for this device. Add more below.'
+    : 'Everyone in the room gets one vote on the house. No payment, no sign up.';
+  $('#free-btn').disabled = S.free;
+  $('#free-btn').textContent = S.free ? 'Already cast' : 'Cast my free vote';
+}
+
+function drawBundles(){
+  $('#bundles').innerHTML = BUNDLES.map((b,i) => `
+    <button class="bundle ${b.best?'best':''}" data-b="${i}" aria-pressed="${S.bundle===i}">
+      <span class="price">$${b.amt}</span>
+      <span class="votes">${b.votes} votes</span>
+      ${b.bonus ? `<span class="bonus">+ ${b.bonus}</span>` : ''}
+    </button>`).join('');
+}
+
+/* ---- the fee is always itemised, and always labelled card only ---- */
+function recalc(){
+  const btn = $('#to-pay'), sum = $('#summary');
+  if (S.bundle === null){
+    sum.hidden = true;
+    btn.disabled = true; btn.textContent = 'Choose an amount';
+    return;
+  }
+  const b   = BUNDLES[S.bundle];
+  const fee = feeFor(b.amt);
+  const total = S.coverFee ? b.amt + fee : b.amt;
+  const net   = S.coverFee ? b.amt : b.amt - fee;
+
+  for (const p of ['s','p']){
+    $('#'+p+'-votes').textContent = b.votes + ' votes for ' + S.dancer.name.split(' ')[0];
+    $('#'+p+'-amt').textContent   = money(b.amt);
+    $('#'+p+'-fee').textContent   = (S.coverFee ? '+ ' : '− ') + money(fee);
+    $('#'+p+'-feeline').classList.toggle('off', !S.coverFee);
+    $('#'+p+'-feenote').textContent = S.coverFee
+      ? 'Cards and digital wallets only. No fee on cash or checks.'
+      : 'Taken out of your gift. Cards and wallets only.';
+    $('#'+p+'-total').textContent = money(total);
+    $('#'+p+'-net').textContent   = money(net);
+    $('#'+p+'-netlabel').textContent = 'The Children’s Justice Center receives';
+  }
+  $('#feelabel').textContent = S.coverFee
+    ? 'Adds ' + money(fee) + ' so the Center keeps your full ' + money(b.amt) + '.'
+    : 'Unchecked, so ' + money(fee) + ' comes out of your ' + money(b.amt) + '.';
+  $('#pay-sum').textContent = b.votes + ' votes for ' + S.dancer.name + '.';
+
+  sum.hidden = false;
+  btn.disabled = false;
+  btn.textContent = 'Continue to payment';
+}
+
+function award(n, label){
+  S.dancer.votes += n;
+  S.mine += n;
+  localStorage.setItem('cjc_mine', S.mine);
+  $('#my-votes').textContent = S.mine.toLocaleString('en-US');
+  drawBoard();
+  $('#done-n').textContent = n.toLocaleString('en-US');
+  $('#done-d').textContent = S.dancer.name;
+  $('#done-h').textContent = label || 'Votes counted';
+  go('done');
+}
+
+document.addEventListener('click', e => {
+  const row = e.target.closest('.row');
+  if (row) return openDancer(Number(row.dataset.id));
+  const nav = e.target.closest('[data-go]');
+  if (nav) return go(nav.dataset.go === 'dancer' && S.dancer ? 'dancer' : 'home');
+  const bun = e.target.closest('.bundle');
+  if (bun){ S.bundle = Number(bun.dataset.b); drawBundles(); recalc(); return; }
+  const pay = e.target.closest('[data-pay]');
+  if (pay) return handlePay(pay);
+});
+
+$('#free-btn').addEventListener('click', () => {
+  S.free = true; localStorage.setItem('cjc_free','1');
+  drawFree(); award(1, 'Free vote counted');
+});
+$('#feechk').addEventListener('change', e => { S.coverFee = e.target.checked; recalc(); });
+$('#to-pay').addEventListener('click', () => { $('#venmo').hidden = true; go('pay'); });
+
+function handlePay(btn){
+  const kind = btn.dataset.pay, b = BUNDLES[S.bundle];
+  if (kind === 'venmo'){
+    $('#vcode').textContent = 'VOTE-' + Math.random().toString(36).slice(2,6).toUpperCase();
+    $('#venmo').hidden = false;
+    $('#venmo').scrollIntoView({ behavior:'smooth', block:'nearest' });
+    return;
+  }
+  if (kind === 'venmo-open'){
+    alert('In the live site this opens Venmo with the amount and the reference code already filled in.');
+    return;
+  }
+  if (kind === 'venmo-sent') return award(b.votes, 'Votes counted, pending confirmation');
+
+  const was = btn.innerHTML;
+  btn.innerHTML = '<span class="word" style="font-size:16px;font-weight:600">Processing</span>';
+  btn.disabled = true;
+  setTimeout(() => { btn.innerHTML = was; btn.disabled = false; award(b.votes); }, 1100);
+}
+
+/* live drift so the room feels alive during a walkthrough */
+setInterval(() => {
+  if (!document.hidden){
+    DANCERS[Math.floor(Math.random()*DANCERS.length)].votes += Math.floor(Math.random()*40) + 5;
+    drawBoard();
+  }
+}, 3400);
+
+CJC.paintWallets();
+$('#goal').textContent = plain(EVENT.goal);
+$('#my-votes').textContent = S.mine.toLocaleString('en-US');
+$('#sticky').style.display = 'none';
+drawBoard();
+</script>
+</body>
+</html>

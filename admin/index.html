@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Admin | Dancing with the Community Stars</title>
+<title>Admin | Battle of the Bands</title>
 <meta name="theme-color" content="#0C0A10">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -165,7 +165,7 @@ nav button.on{color:var(--gold-bright)}
   <div class="proto">Prototype for review. Sample data. Nothing here touches a real payment account.</div>
   <div class="login">
     <h1 class="serif">Event admin</h1>
-    <p>Dancing with the Community Stars</p>
+    <p>Battle of the Bands</p>
     <div class="err" id="err"></div>
     <div class="pin" id="pins"><i></i><i></i><i></i><i></i></div>
     <div class="pad" id="pad">
@@ -282,12 +282,13 @@ nav button.on{color:var(--gold-bright)}
 
 <div class="toast" id="toast"></div>
 
+<script src="../shared/event.js"></script>
 <script>
 /* =========================================================
    PROTOTYPE. All state is in memory. No network calls.
+   Roster comes from shared/event.js so it cannot drift.
    ========================================================= */
-const DANCERS = ['Alex Rivera','Jamie Chen','Morgan Diaz','Sam Okafor','Riley Nakamura',
-                 'Casey Brennan','Avery Thompson','Jordan Patel','Quinn Sullivan','Drew Martinez'];
+const DANCERS = CJC.DANCERS.map(d => d.name);
 const PINS = { '1111':'Cash table 1', '2222':'Cash table 2', '3333':'Cash table 3', '9999':'Lead admin' };
 const METHODS = ['Cash','Check','Card reader','Pledge'];
 const QUICK = [20,50,100,250];
@@ -297,9 +298,9 @@ const $ = s => document.querySelector(s);
 let me = null, pin = '', amt = 0, method = 'Cash', tab = 'credit';
 let entries = [];
 let venmo = [
-  { code:'VOTE-7K2Q', who:'Pending donor', dancer:'Jamie Chen',  amount:25, state:'pending' },
-  { code:'VOTE-M4XB', who:'Pending donor', dancer:'Alex Rivera', amount:50, state:'pending' },
-  { code:'VOTE-R8PD', who:'Pending donor', dancer:'Sam Okafor',  amount:20, state:'pending' }
+  { code:'VOTE-7K2Q', who:'Pending donor', dancer:'Latosha Anderson', amount:25, state:'pending' },
+  { code:'VOTE-M4XB', who:'Pending donor', dancer:'Riley Taylor',     amount:50, state:'pending' },
+  { code:'VOTE-R8PD', who:'Pending donor', dancer:'Dave McIntyre',    amount:20, state:'pending' }
 ];
 let log = [];
 

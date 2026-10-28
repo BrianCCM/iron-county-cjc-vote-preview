@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Big Screen | Dancing with the Community Stars</title>
+<title>Big Screen | Battle of the Bands</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..900;1,14..32,400..900&display=swap" rel="stylesheet">
@@ -47,11 +47,14 @@ header{position:relative;z-index:1;display:flex;align-items:flex-end;justify-con
 /* ---- board ---- */
 main{position:relative;z-index:1;flex:1;display:grid;grid-template-columns:1fr 1fr;
   gap:1.1vh 3vw;padding:2.6vh 4vw;align-content:stretch}
-.r{display:grid;grid-template-columns:clamp(34px,3.4vw,66px) 1fr;gap:1.4vw;align-items:center;
+.r{display:grid;grid-template-columns:clamp(34px,3.4vw,66px) clamp(44px,4.2vw,82px) 1fr;gap:1.2vw;align-items:center;
   padding:.5vh .9vw;border-radius:12px;background:rgba(244,239,232,0.025);border:1px solid transparent;
   transition:background-color .5s ease,border-color .5s ease,transform .5s var(--spring)}
 .r.top{background:linear-gradient(90deg,rgba(216,169,75,0.14),rgba(216,169,75,0.03));border-color:rgba(216,169,75,0.32)}
 .r.bump{transform:scale(1.015)}
+.pic{width:100%;aspect-ratio:1;border-radius:50%;overflow:hidden;border:2px solid var(--line-strong);background:var(--raised)}
+.r.top .pic{border-color:var(--gold)}
+.pic img{width:100%;height:100%;object-fit:cover;display:block}
 .n{font-size:clamp(20px,2.3vw,44px);font-weight:700;color:var(--faint);text-align:center}
 .r.top .n{color:var(--gold-bright)}
 .nm{display:flex;align-items:baseline;justify-content:space-between;gap:1vw;
@@ -91,7 +94,7 @@ footer{position:relative;z-index:1;padding:2vh 4vw 3vh;border-top:1px solid var(
 <header>
   <div>
     <div class="title serif">Dancing with the Community Stars</div>
-    <div class="sub">Iron County Children's Justice Center &middot; Heritage Center Theater</div>
+    <div class="sub">Battle of the Bands &middot; Heritage Center Theatre &middot; Iron County Children's Justice Center</div>
   </div>
   <div class="money">
     <b class="serif" id="raised">$0</b>
@@ -112,20 +115,10 @@ footer{position:relative;z-index:1;padding:2vh 4vw 3vh;border-top:1px solid var(
 
 <div class="keys">R reveal totals &middot; P power hour &middot; F fullscreen</div>
 
+<script src="../shared/event.js"></script>
 <script>
-const DANCERS = [
-  { id:1,  name:'Alex Rivera',    votes:4820 },
-  { id:2,  name:'Jamie Chen',     votes:4415 },
-  { id:3,  name:'Morgan Diaz',    votes:3980 },
-  { id:4,  name:'Sam Okafor',     votes:3610 },
-  { id:5,  name:'Riley Nakamura', votes:3344 },
-  { id:6,  name:'Casey Brennan',  votes:2975 },
-  { id:7,  name:'Avery Thompson', votes:2610 },
-  { id:8,  name:'Jordan Patel',   votes:2298 },
-  { id:9,  name:'Quinn Sullivan', votes:1944 },
-  { id:10, name:'Drew Martinez',  votes:1520 }
-];
-const GOAL = 120000;
+const DANCERS = CJC.DANCERS;
+const GOAL = CJC.EVENT.goal;
 let lastBumped = null;
 
 function draw(){
@@ -134,6 +127,7 @@ function draw(){
   document.getElementById('board').innerHTML = list.map((d,i) => `
     <div class="r ${i===0?'top':''} ${d.id===lastBumped?'bump':''}">
       <div class="n serif">${i+1}</div>
+      <div class="pic"><img src="${CJC.photo(d)}" alt="" loading="lazy"></div>
       <div>
         <div class="nm"><span>${d.name}</span><span class="amt">$${d.votes.toLocaleString('en-US')}</span></div>
         <div class="b"><i style="transform:scaleX(${Math.max(0.06, d.votes/lead).toFixed(3)})"></i></div>
