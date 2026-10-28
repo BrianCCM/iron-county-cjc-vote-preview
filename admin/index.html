@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0C0A10">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..900;1,14..32,400..900&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#0C0A10; --surface:#15111D; --raised:#1E182A; --float:#2A2238;
@@ -24,7 +24,7 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{background:var(--ink);color:var(--text);font-family:Inter,system-ui,sans-serif;
   font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100dvh}
-.serif{font-family:'Playfair Display',Georgia,serif;letter-spacing:-0.03em;line-height:1.1}
+.serif{font-family:Inter,system-ui,-apple-system,sans-serif;font-weight:800;letter-spacing:-0.03em;line-height:1.1}
 .mono{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
 .wrap{max-width:520px;margin:0 auto;padding:0 var(--s4) 108px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
@@ -92,7 +92,7 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--gold-bright);ou
 .chip[aria-pressed="true"]{border-color:var(--gold);background:rgba(216,169,75,0.12);color:var(--gold-bright)}
 
 .amount{text-align:center;padding:var(--s5) 0 var(--s3)}
-.amount b{font-family:'Playfair Display',serif;font-size:50px;font-weight:700;letter-spacing:-0.04em;line-height:1;
+.amount b{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:50px;font-weight:700;letter-spacing:-0.04em;line-height:1;
   font-variant-numeric:tabular-nums}
 .amount span{display:block;font-size:12.5px;color:var(--faint);margin-top:var(--s2)}
 
@@ -103,7 +103,7 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--gold-bright);ou
 .item .g{flex:1;min-width:0}
 .item b{display:block;font-size:14.5px;font-weight:600;letter-spacing:-0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .item small{display:block;font-size:11.5px;color:var(--faint);line-height:1.5}
-.item .v{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;flex-shrink:0}
+.item .v{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;flex-shrink:0}
 .item.void{opacity:.45}
 .item.void .v{text-decoration:line-through}
 .empty{text-align:center;color:var(--faint);font-size:13.5px;padding:var(--s6) var(--s4);line-height:1.7}
@@ -114,7 +114,7 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--gold-bright);ou
 .kv b{font-variant-numeric:tabular-nums;font-weight:600}
 .kv.tot{border-top:1px solid var(--line-strong);border-bottom:0;margin-top:var(--s2);padding-top:var(--s4)}
 .kv:has(+ .kv.tot){border-bottom:0}
-.kv.tot b{font-family:'Playfair Display',serif;font-size:25px;color:var(--gold-bright);letter-spacing:-0.03em}
+.kv.tot b{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:25px;color:var(--gold-bright);letter-spacing:-0.03em}
 
 .sw{display:flex;align-items:center;justify-content:space-between;gap:var(--s4);padding:var(--s4) 0;border-bottom:1px solid var(--line)}
 .sw:last-of-type{border-bottom:0}

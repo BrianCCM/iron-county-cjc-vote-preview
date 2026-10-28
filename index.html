@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0C0A10">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..900;1,14..32,400..900&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#0C0A10; --surface:#15111D; --raised:#1E182A; --float:#2A2238;
@@ -32,11 +32,11 @@ body{background:var(--ink);color:var(--text);font-family:Inter,system-ui,sans-se
 .field::after{content:"";position:absolute;inset:0;opacity:.34;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");}
 .wrap{position:relative;z-index:1;max-width:1040px;margin:0 auto;padding:var(--s7) var(--s5) var(--s8)}
-h1{font-family:'Playfair Display',Georgia,serif;font-weight:700;letter-spacing:-0.03em;line-height:1.05;
+h1{font-family:Inter,system-ui,-apple-system,sans-serif;font-weight:700;letter-spacing:-0.03em;line-height:1.05;
   font-size:clamp(32px,5.2vw,54px)}
 h1 em{font-style:italic;color:var(--gold-bright);font-weight:500}
 .sub{color:var(--muted);font-size:clamp(15px,1.6vw,18px);max-width:58ch;margin-top:var(--s4)}
-h2{font-family:'Playfair Display',Georgia,serif;font-weight:700;letter-spacing:-0.025em;font-size:25px;line-height:1.15}
+h2{font-family:Inter,system-ui,-apple-system,sans-serif;font-weight:700;letter-spacing:-0.025em;font-size:25px;line-height:1.15}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--s5);margin-top:var(--s7)}
 .card{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);
