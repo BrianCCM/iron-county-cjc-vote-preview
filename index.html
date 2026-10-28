@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Live voting prototype | Dancing with the Community Stars</title>
+<meta name="theme-color" content="#0C0A10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0C0A10; --surface:#15111D; --raised:#1E182A; --float:#2A2238;
+  --line:rgba(244,239,232,0.10); --line-strong:rgba(244,239,232,0.20);
+  --gold:#D8A94B; --gold-bright:#F0C871;
+  --text:#F4EFE8; --muted:#A99DB4; --faint:#6E6479;
+  --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px;
+  --r-md:14px; --r-lg:20px;
+  --e-2:0 2px 4px rgba(0,0,0,0.35), 0 6px 14px rgba(0,0,0,0.35);
+  --e-3:0 4px 8px rgba(0,0,0,0.40), 0 16px 34px rgba(0,0,0,0.45);
+  --spring:cubic-bezier(0.34,1.4,0.64,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--text);font-family:Inter,system-ui,sans-serif;
+  font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased;min-height:100dvh}
+.field{position:fixed;inset:0;z-index:0;pointer-events:none}
+.field::before{content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(900px 620px at 10% -8%, rgba(216,169,75,0.15), transparent 62%),
+    radial-gradient(800px 560px at 93% 2%, rgba(123,74,138,0.19), transparent 60%);}
+.field::after{content:"";position:absolute;inset:0;opacity:.34;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");}
+.wrap{position:relative;z-index:1;max-width:1040px;margin:0 auto;padding:var(--s7) var(--s5) var(--s8)}
+h1{font-family:'Playfair Display',Georgia,serif;font-weight:700;letter-spacing:-0.03em;line-height:1.05;
+  font-size:clamp(32px,5.2vw,54px)}
+h1 em{font-style:italic;color:var(--gold-bright);font-weight:500}
+.sub{color:var(--muted);font-size:clamp(15px,1.6vw,18px);max-width:58ch;margin-top:var(--s4)}
+h2{font-family:'Playfair Display',Georgia,serif;font-weight:700;letter-spacing:-0.025em;font-size:25px;line-height:1.15}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--s5);margin-top:var(--s7)}
+.card{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-lg);overflow:hidden;text-decoration:none;color:inherit;box-shadow:var(--e-2);
+  transition:transform .26s var(--spring),border-color .26s ease,box-shadow .26s ease}
+.card:hover{transform:translateY(-4px);border-color:var(--line-strong);box-shadow:var(--e-3)}
+.card:active{transform:translateY(-1px)}
+.card:focus-visible{outline:2px solid var(--gold-bright);outline-offset:3px}
+.shot{position:relative;background:var(--float);border-bottom:1px solid var(--line);overflow:hidden}
+.shot img{width:100%;height:100%;display:block;object-fit:cover;object-position:top center}
+.shot.wide{background:#0C0A10}
+.shot.fit img{object-fit:contain;object-position:center}
+.tall{aspect-ratio:430/560}
+.wide{aspect-ratio:1280/660}
+.body{padding:var(--s5)}
+.body p{font-size:14px;color:var(--muted);line-height:1.65;margin-top:var(--s2)}
+.sw{display:flex;gap:7px;margin-top:var(--s4)}
+.sw i{width:21px;height:21px;border-radius:50%;border:1px solid rgba(244,239,232,0.16)}
+.open{display:inline-flex;align-items:center;gap:6px;margin-top:var(--s4);font-size:13.5px;
+  font-weight:600;color:var(--gold-bright)}
+.card:hover .open span{transform:translateX(3px)}
+.open span{transition:transform .24s var(--spring);display:inline-block}
+
+.sec{margin-top:var(--s8)}
+.sec>p{color:var(--muted);font-size:15px;max-width:62ch;margin-top:var(--s3)}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:var(--s5);margin-top:var(--s5)}
+
+ul{list-style:none;margin-top:var(--s5);display:grid;gap:var(--s3)}
+li{display:flex;gap:var(--s3);font-size:14.5px;color:var(--muted);line-height:1.6;
+  padding-left:0}
+li span{flex:1}
+li b{color:var(--text);font-weight:600}
+li::before{content:"";flex-shrink:0;width:5px;height:5px;border-radius:50%;background:var(--gold);margin-top:11px}
+
+.keys{margin-top:var(--s5);padding:var(--s4) var(--s5);border-radius:var(--r-md);
+  background:var(--surface);border:1px solid var(--line);font-size:13.5px;color:var(--muted);line-height:1.9}
+.keys code{color:var(--gold-bright);font-weight:600;font-family:ui-monospace,Menlo,monospace}
+.keys b{color:var(--text);display:block;margin-bottom:var(--s2);font-size:14px}
+
+footer{margin-top:var(--s8);padding-top:var(--s5);border-top:1px solid var(--line);
+  color:var(--faint);font-size:13px;line-height:1.8}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="field" aria-hidden="true"></div>
+<div class="wrap">
+
+  <h1>Live voting for <em>Dancing with the Community Stars</em></h1>
+  <p class="sub">A working prototype for the November 17 event at the Heritage Center Theater. Tap through it on your phone. Two looks for the voter screen, plus the big screen and the admin side used at the cash tables.</p>
+
+  <div class="grid">
+    <a class="card" href="v1-gala/">
+      <div class="shot tall"><img src="images/thumb-gala.webp" alt="Dark voter screen with gold leaderboard" width="430" height="560" loading="lazy"></div>
+      <div class="body">
+        <h2>Gala</h2>
+        <p>Dark and dimensional, built to be read on a phone in a dark theater. High contrast, dancer portraits carry the page.</p>
+        <div class="sw" aria-hidden="true">
+          <i style="background:#0C0A10"></i><i style="background:#1E182A"></i><i style="background:#D8A94B"></i><i style="background:#F0C871"></i>
+        </div>
+        <span class="open">Open the voter screen <span>&rarr;</span></span>
+      </div>
+    </a>
+
+    <a class="card" href="v2-hopeful/">
+      <div class="shot tall"><img src="images/thumb-hopeful.webp" alt="Light cream voter screen with teal leaderboard" width="430" height="560" loading="lazy"></div>
+      <div class="body">
+        <h2>Hopeful</h2>
+        <p>Warm cream and deep teal, closer to how the Center talks about its own work. Reads as a children's charity first.</p>
+        <div class="sw" aria-hidden="true">
+          <i style="background:#FBF6EE"></i><i style="background:#1C5465"></i><i style="background:#C2742A"></i><i style="background:#172A33"></i>
+        </div>
+        <span class="open">Open the voter screen <span>&rarr;</span></span>
+      </div>
+    </a>
+  </div>
+
+  <div class="sec">
+    <h2>The other two screens</h2>
+    <p>These are shared. Whichever look the board picks for the voter screen, the big screen stays dark for the theater and the admin side stays a plain utility.</p>
+    <div class="pair">
+      <a class="card" href="display/">
+        <div class="shot wide fit"><img src="images/thumb-display.webp" alt="Projector leaderboard" width="1280" height="660" loading="lazy"></div>
+        <div class="body">
+          <h2>Big screen</h2>
+          <p>For the projector. Rank and bars all night, then press R to reveal real dollar totals at the finale.</p>
+          <span class="open">Open the big screen <span>&rarr;</span></span>
+        </div>
+      </a>
+      <a class="card" href="admin/">
+        <div class="shot wide"><img src="images/thumb-admin.webp" alt="Admin credit screen" width="1280" height="660" loading="lazy"></div>
+        <div class="body">
+          <h2>Admin</h2>
+          <p>What the cash tables use. Credit cash and checks, work the Venmo queue, reverse mistakes, balance each drawer.</p>
+          <span class="open">Open the admin side <span>&rarr;</span></span>
+        </div>
+      </a>
+    </div>
+    <div class="keys">
+      <b>Codes for the walkthrough</b>
+      Admin, cash tables: <code>1111</code> <code>2222</code> <code>3333</code> &middot; lead admin, who also gets controls and reconciliation: <code>9999</code><br>
+      Big screen: <code>R</code> reveal totals &middot; <code>P</code> power hour &middot; <code>F</code> fullscreen
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>What is not real yet</h2>
+    <ul>
+      <li><span><b>Payments.</b> Nothing charges a card. Square goes in once the account is verified and API credentials are issued.</span></li>
+      <li><span><b>Dancers.</b> Ten placeholder names, placeholder photos, sponsors marked TBD.</span></li>
+      <li><span><b>Totals.</b> Sample numbers that drift on their own so the screens look alive during a demo.</span></li>
+      <li><span><b>The goal.</b> $120,000 is a stand-in. Last reported year was $109,797.</span></li>
+      <li><span><b>Bundle pricing.</b> $5, $20, $50 and $100 are a starting point. Single $1 votes are deliberately not offered, because processing fees eat about a third of a one dollar charge.</span></li>
+    </ul>
+  </div>
+
+  <footer>
+    Prepared for Friends of the Children's Justice Center of Iron County.<br>
+    Prototype only. Not indexed, not public, not connected to any payment account.
+  </footer>
+
+</div>
+</body>
+</html>

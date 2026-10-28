@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin | Dancing with the Community Stars</title>
+<meta name="theme-color" content="#0C0A10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0C0A10; --surface:#15111D; --raised:#1E182A; --float:#2A2238;
+  --line:rgba(244,239,232,0.10); --line-strong:rgba(244,239,232,0.20);
+  --gold:#D8A94B; --gold-bright:#F0C871;
+  --text:#F4EFE8; --muted:#A99DB4; --faint:#6E6479;
+  --good:#6FBF8B; --bad:#E0756A;
+  --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px;
+  --r-sm:8px; --r-md:14px; --r-lg:20px;
+  --e-2:0 2px 4px rgba(0,0,0,0.35), 0 6px 14px rgba(0,0,0,0.35);
+  --spring:cubic-bezier(0.34,1.4,0.64,1);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--ink);color:var(--text);font-family:Inter,system-ui,sans-serif;
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100dvh}
+.serif{font-family:'Playfair Display',Georgia,serif;letter-spacing:-0.03em;line-height:1.1}
+.mono{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.wrap{max-width:520px;margin:0 auto;padding:0 var(--s4) 108px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+
+/* ---- ribbon + bar ---- */
+.proto{background:var(--gold);color:#140F06;font-size:11.5px;font-weight:700;text-align:center;padding:7px var(--s4);line-height:1.45}
+.bar{position:sticky;top:0;z-index:20;background:rgba(12,10,16,0.88);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line)}
+.bar-in{max-width:520px;margin:0 auto;padding:var(--s3) var(--s4);display:flex;align-items:center;gap:var(--s3)}
+.bar b{font-size:15px;font-weight:600;flex:1;letter-spacing:-0.01em}
+.tag{font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px;border:1px solid var(--line-strong);color:var(--muted)}
+.tag.on{color:var(--gold-bright);border-color:rgba(216,169,75,0.34);background:rgba(216,169,75,0.08)}
+
+/* ---- buttons ---- */
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:0;color:inherit}
+.btn{display:flex;align-items:center;justify-content:center;gap:var(--s2);width:100%;
+  font-size:16px;font-weight:600;padding:16px var(--s5);border-radius:var(--r-md);
+  transition:transform .2s var(--spring),background-color .2s ease,opacity .2s ease}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0) scale(.985)}
+.btn:focus-visible{outline:2px solid var(--gold-bright);outline-offset:3px}
+.btn[disabled]{opacity:.4;cursor:not-allowed;transform:none!important}
+.btn-primary{background:var(--gold);color:#140F06;box-shadow:var(--e-2)}
+.btn-primary:hover{background:var(--gold-bright)}
+.btn-ghost{background:var(--raised);border:1px solid var(--line-strong)}
+.btn-ghost:hover{background:var(--float)}
+.btn-bad{background:rgba(224,117,106,0.12);border:1px solid rgba(224,117,106,0.40);color:var(--bad)}
+.btn-sm{width:auto;font-size:13px;padding:9px 14px;border-radius:var(--r-sm)}
+
+/* ---- login ---- */
+.login{max-width:380px;margin:0 auto;padding:var(--s7) var(--s4);text-align:center}
+.login h1{font-size:30px;margin-bottom:var(--s2)}
+.login p{color:var(--muted);font-size:14px;margin-bottom:var(--s6)}
+.pin{display:flex;gap:var(--s3);justify-content:center;margin-bottom:var(--s6)}
+.pin i{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--line-strong);transition:background-color .2s ease,border-color .2s ease}
+.pin i.f{background:var(--gold);border-color:var(--gold)}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s3)}
+.pad button{aspect-ratio:1.55;background:var(--raised);border:1px solid var(--line);border-radius:var(--r-md);
+  font-size:23px;font-weight:600;transition:transform .16s var(--spring),background-color .16s ease}
+.pad button:hover{background:var(--float)}
+.pad button:active{transform:scale(.95)}
+.pad button:focus-visible{outline:2px solid var(--gold-bright);outline-offset:2px}
+.pad .sm{font-size:14px;color:var(--muted)}
+.hint{margin-top:var(--s5);font-size:12.5px;color:var(--faint);line-height:1.7}
+.hint code{color:var(--gold-bright);font-weight:600}
+.err{color:var(--bad);font-size:13.5px;min-height:20px;margin-bottom:var(--s3)}
+
+/* ---- cards ---- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--s5);margin-top:var(--s4)}
+.card h2{font-size:19px;font-weight:600;letter-spacing:-0.015em;margin-bottom:var(--s2)}
+.card p.sub{font-size:13px;color:var(--faint);line-height:1.6;margin-bottom:var(--s4)}
+.lbl{display:block;font-size:13px;color:var(--muted);font-weight:500;margin:var(--s4) 0 var(--s2)}
+.lbl:first-child{margin-top:0}
+
+select,input[type=text]{width:100%;background:var(--ink);color:var(--text);border:1px solid var(--line-strong);
+  border-radius:var(--r-sm);padding:13px var(--s3);font-family:inherit;font-size:15px}
+select:focus-visible,input:focus-visible{outline:2px solid var(--gold-bright);outline-offset:1px}
+
+.chips{display:flex;flex-wrap:wrap;gap:var(--s2)}
+.chip{padding:10px 15px;border-radius:999px;background:var(--raised);border:1px solid var(--line);
+  font-size:14px;font-weight:600;transition:transform .18s var(--spring),border-color .18s ease,background-color .18s ease}
+.chip:hover{background:var(--float)}
+.chip:active{transform:scale(.96)}
+.chip:focus-visible{outline:2px solid var(--gold-bright);outline-offset:2px}
+.chip[aria-pressed="true"]{border-color:var(--gold);background:rgba(216,169,75,0.12);color:var(--gold-bright)}
+
+.amount{text-align:center;padding:var(--s5) 0 var(--s3)}
+.amount b{font-family:'Playfair Display',serif;font-size:50px;font-weight:700;letter-spacing:-0.04em;line-height:1;
+  font-variant-numeric:tabular-nums}
+.amount span{display:block;font-size:12.5px;color:var(--faint);margin-top:var(--s2)}
+
+/* ---- lists ---- */
+.rows{display:flex;flex-direction:column;gap:var(--s2);margin-top:var(--s3)}
+.item{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) var(--s4);border-radius:var(--r-md);
+  background:var(--raised);border:1px solid var(--line)}
+.item .g{flex:1;min-width:0}
+.item b{display:block;font-size:14.5px;font-weight:600;letter-spacing:-0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item small{display:block;font-size:11.5px;color:var(--faint);line-height:1.5}
+.item .v{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;flex-shrink:0}
+.item.void{opacity:.45}
+.item.void .v{text-decoration:line-through}
+.empty{text-align:center;color:var(--faint);font-size:13.5px;padding:var(--s6) var(--s4);line-height:1.7}
+
+.kv{display:flex;justify-content:space-between;gap:var(--s4);padding:11px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+.kv:last-child{border-bottom:0}
+.kv span{color:var(--muted)}
+.kv b{font-variant-numeric:tabular-nums;font-weight:600}
+.kv.tot{border-top:1px solid var(--line-strong);border-bottom:0;margin-top:var(--s2);padding-top:var(--s4)}
+.kv:has(+ .kv.tot){border-bottom:0}
+.kv.tot b{font-family:'Playfair Display',serif;font-size:25px;color:var(--gold-bright);letter-spacing:-0.03em}
+
+.sw{display:flex;align-items:center;justify-content:space-between;gap:var(--s4);padding:var(--s4) 0;border-bottom:1px solid var(--line)}
+.sw:last-of-type{border-bottom:0}
+.sw div{flex:1}
+.sw b{display:block;font-size:15px;font-weight:600}
+.sw small{display:block;font-size:12.5px;color:var(--faint);line-height:1.5}
+.toggle{width:52px;height:31px;border-radius:999px;background:var(--float);border:1px solid var(--line-strong);
+  position:relative;flex-shrink:0;transition:background-color .22s ease,border-color .22s ease}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:23px;height:23px;border-radius:50%;
+  background:var(--muted);transition:transform .24s var(--spring),background-color .22s ease}
+.toggle[aria-pressed="true"]{background:rgba(216,169,75,0.26);border-color:var(--gold)}
+.toggle[aria-pressed="true"]::after{transform:translateX(21px);background:var(--gold-bright)}
+.toggle:focus-visible{outline:2px solid var(--gold-bright);outline-offset:3px}
+
+.log{font-size:12px;color:var(--faint);line-height:1.8;max-height:220px;overflow:auto;
+  background:var(--ink);border:1px solid var(--line);border-radius:var(--r-sm);padding:var(--s3) var(--s4);margin-top:var(--s3)}
+.log div{border-bottom:1px solid rgba(244,239,232,0.05);padding:3px 0}
+.log div:last-child{border-bottom:0}
+.log em{color:var(--muted);font-style:normal}
+
+/* ---- tabs ---- */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(12,10,16,0.92);
+  backdrop-filter:blur(16px);border-top:1px solid var(--line);
+  padding:var(--s2) var(--s3) calc(var(--s2) + env(safe-area-inset-bottom))}
+.nav-in{max-width:520px;margin:0 auto;display:flex;gap:2px}
+nav button{flex:1;background:none;padding:9px 2px;border-radius:var(--r-sm);font-size:10.5px;font-weight:600;
+  color:var(--faint);display:flex;flex-direction:column;align-items:center;gap:4px;line-height:1.2;
+  transition:color .2s ease,background-color .2s ease}
+nav button svg{width:21px;height:21px;display:block;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+nav button:hover{color:var(--muted);background:rgba(244,239,232,0.04)}
+nav button:focus-visible{outline:2px solid var(--gold-bright);outline-offset:-2px}
+nav button.on{color:var(--gold-bright)}
+
+.pane{display:none}
+.pane.on{display:block;animation:in .3s var(--spring) both}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.toast{position:fixed;left:50%;bottom:92px;z-index:40;transform:translate(-50%,16px);opacity:0;
+  background:var(--good);color:#06180E;font-size:14px;font-weight:600;padding:12px 20px;border-radius:999px;
+  box-shadow:var(--e-2);pointer-events:none;transition:transform .3s var(--spring),opacity .3s ease;white-space:nowrap}
+.toast.on{transform:translate(-50%,0);opacity:1}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="login">
+  <div class="proto">Prototype for review. Sample data. Nothing here touches a real payment account.</div>
+  <div class="login">
+    <h1 class="serif">Event admin</h1>
+    <p>Dancing with the Community Stars</p>
+    <div class="err" id="err"></div>
+    <div class="pin" id="pins"><i></i><i></i><i></i><i></i></div>
+    <div class="pad" id="pad">
+      <button>1</button><button>2</button><button>3</button>
+      <button>4</button><button>5</button><button>6</button>
+      <button>7</button><button>8</button><button>9</button>
+      <button class="sm" data-k="clear">Clear</button><button>0</button><button class="sm" data-k="del">Back</button>
+    </div>
+    <p class="hint">
+      Demo codes<br>
+      Cash table 1 <code>1111</code> &middot; Table 2 <code>2222</code> &middot; Table 3 <code>3333</code><br>
+      Lead admin <code>9999</code>
+    </p>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app" hidden>
+  <div class="proto">Prototype for review. Sample data. Nothing here touches a real payment account.</div>
+  <div class="bar"><div class="bar-in">
+    <b id="who">Cash table 1</b>
+    <span class="tag on" id="vstate">Voting open</span>
+    <button class="btn btn-ghost btn-sm" id="out">Sign out</button>
+  </div></div>
+
+  <div class="wrap">
+
+    <!-- ---- CREDIT ---- -->
+    <section class="pane on" id="p-credit">
+      <div class="card">
+        <h2>Credit votes</h2>
+        <p class="sub">For cash, checks and anything taken on the card reader. Every entry is stamped with your table and stays in the audit log.</p>
+
+        <label class="lbl" for="d">Dancer</label>
+        <select id="d"></select>
+
+        <label class="lbl">Amount</label>
+        <div class="chips" id="quick"></div>
+        <div class="amount"><b class="mono" id="amt">$0</b><span id="votes">0 votes</span></div>
+        <div class="pad" id="pad2">
+          <button>1</button><button>2</button><button>3</button>
+          <button>4</button><button>5</button><button>6</button>
+          <button>7</button><button>8</button><button>9</button>
+          <button class="sm" data-k="clear">Clear</button><button>0</button><button class="sm" data-k="del">Back</button>
+        </div>
+
+        <label class="lbl">Method</label>
+        <div class="chips" id="method"></div>
+
+        <label class="lbl" for="note">Note (optional)</label>
+        <input type="text" id="note" placeholder="Donor name, check number, table">
+
+        <button class="btn btn-primary" id="submit" style="margin-top:var(--s5)" disabled>Enter an amount</button>
+      </div>
+    </section>
+
+    <!-- ---- VENMO ---- -->
+    <section class="pane" id="p-venmo">
+      <div class="card">
+        <h2>Venmo queue</h2>
+        <p class="sub">Votes post the moment a donor taps "I sent it". Match the reference code against the Venmo feed and confirm, or reverse it if nothing arrived.</p>
+        <div class="rows" id="vq"></div>
+      </div>
+    </section>
+
+    <!-- ---- ENTRIES ---- -->
+    <section class="pane" id="p-entries">
+      <div class="card">
+        <h2>Your entries</h2>
+        <p class="sub">Corrections post as a reversal, never as a deletion, so your drawer still balances at the end of the night.</p>
+        <div class="rows" id="list"></div>
+      </div>
+    </section>
+
+    <!-- ---- CONTROLS ---- -->
+    <section class="pane" id="p-controls">
+      <div class="card">
+        <h2>Event controls</h2>
+        <p class="sub">Lead admin only. These change what the whole room sees.</p>
+        <div class="sw">
+          <div><b>Voting open</b><small>Closing stops all new votes instantly</small></div>
+          <button class="toggle" id="t-vote" aria-pressed="true"><span class="sr">Voting open</span></button>
+        </div>
+        <div class="sw">
+          <div><b>Reveal dollar totals</b><small>Flips the big screen from rank to real amounts</small></div>
+          <button class="toggle" id="t-reveal" aria-pressed="false"><span class="sr">Reveal totals</span></button>
+        </div>
+        <div class="sw">
+          <div><b>Power hour</b><small>Every vote counts double until switched off</small></div>
+          <button class="toggle" id="t-power" aria-pressed="false"><span class="sr">Power hour</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---- RECONCILE ---- -->
+    <section class="pane" id="p-recon">
+      <div class="card">
+        <h2>Reconciliation</h2>
+        <p class="sub">Live as the night runs. Each table balances on its own so a short drawer points at one person, not all three.</p>
+        <div id="recon"></div>
+        <button class="btn btn-ghost" style="margin-top:var(--s5)" id="csv">Export CSV for the treasurer</button>
+      </div>
+      <div class="card">
+        <h2>Audit log</h2>
+        <p class="sub">Append only.</p>
+        <div class="log" id="log"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <nav><div class="nav-in" id="tabs"></div></nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   PROTOTYPE. All state is in memory. No network calls.
+   ========================================================= */
+const DANCERS = ['Alex Rivera','Jamie Chen','Morgan Diaz','Sam Okafor','Riley Nakamura',
+                 'Casey Brennan','Avery Thompson','Jordan Patel','Quinn Sullivan','Drew Martinez'];
+const PINS = { '1111':'Cash table 1', '2222':'Cash table 2', '3333':'Cash table 3', '9999':'Lead admin' };
+const METHODS = ['Cash','Check','Card reader','Pledge'];
+const QUICK = [20,50,100,250];
+const BIG = 100; // entries above this need a second confirm
+
+const $ = s => document.querySelector(s);
+let me = null, pin = '', amt = 0, method = 'Cash', tab = 'credit';
+let entries = [];
+let venmo = [
+  { code:'VOTE-7K2Q', who:'Pending donor', dancer:'Jamie Chen',  amount:25, state:'pending' },
+  { code:'VOTE-M4XB', who:'Pending donor', dancer:'Alex Rivera', amount:50, state:'pending' },
+  { code:'VOTE-R8PD', who:'Pending donor', dancer:'Sam Okafor',  amount:20, state:'pending' }
+];
+let log = [];
+
+const money = n => '$' + n.toLocaleString('en-US');
+const now = () => new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',second:'2-digit'});
+function audit(msg){ log.unshift({ t:now(), who:me, msg }); drawLog(); }
+function toast(msg){
+  const el = $('#toast'); el.textContent = msg; el.classList.add('on');
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 2200);
+}
+
+/* ---------------- login ---------------- */
+function drawPins(){
+  document.querySelectorAll('#pins i').forEach((el,i) => el.classList.toggle('f', i < pin.length));
+}
+$('#pad').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const k = b.dataset.k;
+  if (k === 'clear') pin = '';
+  else if (k === 'del') pin = pin.slice(0,-1);
+  else if (pin.length < 4) pin += b.textContent.trim();
+  drawPins();
+  $('#err').textContent = '';
+  if (pin.length === 4){
+    setTimeout(() => {
+      if (PINS[pin]){ me = PINS[pin]; start(); }
+      else { $('#err').textContent = 'That code was not recognised.'; pin = ''; drawPins(); }
+    }, 140);
+  }
+});
+
+function start(){
+  $('#login').hidden = true;
+  $('#app').hidden = false;
+  $('#who').textContent = me;
+  const lead = me === 'Lead admin';
+  const svg = d => `<svg viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+  const ICON = {
+    credit:   svg('<circle cx="12" cy="12" r="8.6"/><path d="M12 8.2v7.6M8.2 12h7.6"/>'),
+    venmo:    svg('<circle cx="12" cy="12" r="8.6"/><path d="M12 7.2V12l3.2 2"/>'),
+    entries:  svg('<path d="M4.5 7h15M4.5 12h15M4.5 17h9.5"/>'),
+    controls: svg('<path d="M3.6 8.5h16.8M3.6 15.5h16.8"/><circle cx="9" cy="8.5" r="2.5"/><circle cx="15.6" cy="15.5" r="2.5"/>'),
+    recon:    svg('<path d="M6.4 3.2h11.2v17.6l-2.8-1.9-2.8 1.9-2.8-1.9-2.8 1.9z"/><path d="M9.6 8.4h4.8M9.6 12.4h4.8"/>')
+  };
+  const defs = [['credit','Credit'],['venmo','Venmo'],['entries','Entries'],
+    ...(lead ? [['controls','Controls'],['recon','Reconcile']] : [])];
+  $('#tabs').innerHTML = defs.map(([id,label]) =>
+    `<button data-t="${id}" class="${id===tab?'on':''}">${ICON[id]}${label}</button>`).join('');
+  if (!lead && (tab === 'controls' || tab === 'recon')) show('credit');
+  audit('signed in');
+  drawAll();
+}
+$('#out').addEventListener('click', () => {
+  audit('signed out');
+  me = null; pin = ''; drawPins();
+  $('#app').hidden = true; $('#login').hidden = false;
+});
+
+/* ---------------- tabs ---------------- */
+function show(t){
+  tab = t;
+  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'p' + '-' + t));
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  window.scrollTo({ top:0, behavior:'instant' });
+}
+$('#tabs').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (b) show(b.dataset.t);
+});
+
+/* ---------------- credit ---------------- */
+$('#d').innerHTML = DANCERS.map(n => `<option>${n}</option>`).join('');
+$('#quick').innerHTML = QUICK.map(v => `<button class="chip" data-q="${v}">$${v}</button>`).join('');
+$('#method').innerHTML = METHODS.map(m => `<button class="chip" data-m="${m}" aria-pressed="${m===method}">${m}</button>`).join('');
+
+function drawAmt(){
+  $('#amt').textContent = money(amt);
+  $('#votes').textContent = amt.toLocaleString('en-US') + (amt === 1 ? ' vote' : ' votes');
+  const b = $('#submit');
+  b.disabled = amt <= 0;
+  b.textContent = amt <= 0 ? 'Enter an amount' : 'Credit ' + money(amt) + ' to ' + $('#d').value;
+  document.querySelectorAll('#quick .chip').forEach(c => c.setAttribute('aria-pressed', Number(c.dataset.q) === amt));
+}
+$('#quick').addEventListener('click', e => {
+  const c = e.target.closest('.chip'); if (!c) return;
+  amt = Number(c.dataset.q); drawAmt();
+});
+$('#method').addEventListener('click', e => {
+  const c = e.target.closest('.chip'); if (!c) return;
+  method = c.dataset.m;
+  document.querySelectorAll('#method .chip').forEach(x => x.setAttribute('aria-pressed', x.dataset.m === method));
+});
+$('#pad2').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const k = b.dataset.k;
+  if (k === 'clear') amt = 0;
+  else if (k === 'del') amt = Math.floor(amt / 10);
+  else if (amt < 100000) amt = amt * 10 + Number(b.textContent.trim());
+  drawAmt();
+});
+$('#d').addEventListener('change', drawAmt);
+
+$('#submit').addEventListener('click', () => {
+  const dancer = $('#d').value, note = $('#note').value.trim();
+  if (amt >= BIG && !confirm('Confirm ' + money(amt) + ' in ' + method.toLowerCase() + ' for ' + dancer + '?')) return;
+  entries.unshift({ id:Date.now(), who:me, dancer, amount:amt, method, note, t:now(), void:false });
+  audit('credited ' + money(amt) + ' (' + method + ') to ' + dancer + (note ? ' [' + note + ']' : ''));
+  toast(money(amt) + ' credited to ' + dancer.split(' ')[0]);
+  amt = 0; $('#note').value = ''; drawAmt(); drawList(); drawRecon();
+});
+
+/* ---------------- venmo ---------------- */
+function drawVenmo(){
+  const pend = venmo.filter(v => v.state === 'pending');
+  $('#vq').innerHTML = pend.length ? pend.map(v => `
+    <div class="item">
+      <div class="g"><b>${v.code}</b><small>${v.dancer} &middot; ${money(v.amount)} &middot; awaiting match</small></div>
+      <button class="btn btn-ghost btn-sm" data-ok="${v.code}">Confirm</button>
+      <button class="btn btn-bad btn-sm" data-no="${v.code}">Reverse</button>
+    </div>`).join('')
+    : '<p class="empty">Nothing waiting.<br>New Venmo payments appear here the moment a donor taps "I sent it".</p>';
+}
+$('#vq').addEventListener('click', e => {
+  const ok = e.target.closest('[data-ok]'), no = e.target.closest('[data-no]');
+  if (!ok && !no) return;
+  const code = (ok || no).dataset.ok || (ok || no).dataset.no;
+  const v = venmo.find(x => x.code === code);
+  v.state = ok ? 'confirmed' : 'reversed';
+  if (ok) entries.unshift({ id:Date.now(), who:me, dancer:v.dancer, amount:v.amount, method:'Venmo', note:v.code, t:now(), void:false });
+  audit((ok ? 'confirmed ' : 'reversed ') + code + ' (' + money(v.amount) + ', ' + v.dancer + ')');
+  toast(ok ? code + ' confirmed' : code + ' reversed');
+  drawVenmo(); drawList(); drawRecon();
+});
+
+/* ---------------- entries ---------------- */
+function drawList(){
+  const mine = entries.filter(e => me === 'Lead admin' || e.who === me);
+  $('#list').innerHTML = mine.length ? mine.map(e => `
+    <div class="item ${e.void?'void':''}">
+      <div class="g">
+        <b>${e.dancer}</b>
+        <small>${e.method} &middot; ${e.t} &middot; ${e.who}${e.note ? ' &middot; ' + e.note : ''}</small>
+      </div>
+      <span class="v">${money(e.amount)}</span>
+      ${e.void ? '' : `<button class="btn btn-bad btn-sm" data-v="${e.id}">Reverse</button>`}
+    </div>`).join('')
+    : '<p class="empty">No entries yet.<br>Credits you take at this table will show up here.</p>';
+}
+$('#list').addEventListener('click', e => {
+  const b = e.target.closest('[data-v]'); if (!b) return;
+  const en = entries.find(x => x.id === Number(b.dataset.v));
+  if (!confirm('Reverse ' + money(en.amount) + ' for ' + en.dancer + '? This posts an offsetting entry.')) return;
+  en.void = true;
+  audit('reversed ' + money(en.amount) + ' for ' + en.dancer);
+  toast('Entry reversed');
+  drawList(); drawRecon();
+});
+
+/* ---------------- controls ---------------- */
+['t-vote','t-reveal','t-power'].forEach(id => {
+  $('#' + id).addEventListener('click', e => {
+    const b = e.currentTarget;
+    const on = b.getAttribute('aria-pressed') !== 'true';
+    b.setAttribute('aria-pressed', on);
+    const label = { 't-vote':'voting', 't-reveal':'dollar totals', 't-power':'power hour' }[id];
+    audit((on ? 'opened ' : 'closed ') + label);
+    toast(label[0].toUpperCase() + label.slice(1) + (on ? ' on' : ' off'));
+    if (id === 't-vote'){
+      $('#vstate').textContent = on ? 'Voting open' : 'Voting closed';
+      $('#vstate').classList.toggle('on', on);
+    }
+  });
+});
+
+/* ---------------- reconcile ---------------- */
+function drawRecon(){
+  const live = entries.filter(e => !e.void);
+  const tables = ['Cash table 1','Cash table 2','Cash table 3','Lead admin'];
+  const byTable = tables.map(t => [t, live.filter(e => e.who === t).reduce((s,e) => s + e.amount, 0)]).filter(x => x[1] > 0);
+  const byMethod = [...METHODS,'Venmo'].map(m => [m, live.filter(e => e.method === m).reduce((s,e) => s + e.amount, 0)]).filter(x => x[1] > 0);
+  const manual = live.reduce((s,e) => s + e.amount, 0);
+  const digital = 31544; // stand-in for the Square total
+  $('#recon').innerHTML =
+    '<div class="kv"><span>Square, card and wallets</span><b>' + money(digital) + '</b></div>' +
+    byMethod.map(([m,v]) => '<div class="kv"><span>' + m + '</span><b>' + money(v) + '</b></div>').join('') +
+    (byTable.length ? '<div class="kv" style="border-bottom:0;padding-bottom:2px;margin-top:var(--s4)"><span style="color:var(--faint);font-size:12.5px">By drawer</span><b></b></div>' : '') +
+    byTable.map(([t,v]) => '<div class="kv"><span>' + t + '</span><b>' + money(v) + '</b></div>').join('') +
+    '<div class="kv tot"><span>Raised tonight</span><b>' + money(digital + manual) + '</b></div>';
+}
+$('#csv').addEventListener('click', () => {
+  audit('exported CSV');
+  toast('CSV exported');
+});
+function drawLog(){
+  $('#log').innerHTML = log.length
+    ? log.map(l => '<div><em>' + l.t + '</em> &middot; ' + l.who + ' &middot; ' + l.msg + '</div>').join('')
+    : '<div>Nothing logged yet.</div>';
+}
+
+function drawAll(){ drawAmt(); drawVenmo(); drawList(); drawRecon(); drawLog(); }
+drawPins();
+</script>
+</body>
+</html>

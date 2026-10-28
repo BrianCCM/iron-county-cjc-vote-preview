@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Big Screen | Dancing with the Community Stars</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0C0A10; --surface:#15111D; --raised:#1E182A;
+  --line:rgba(244,239,232,0.10); --line-strong:rgba(244,239,232,0.20);
+  --gold:#D8A94B; --gold-bright:#F0C871;
+  --text:#F4EFE8; --muted:#A99DB4; --faint:#6E6479;
+  --spring:cubic-bezier(0.34,1.4,0.64,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--ink);color:var(--text);
+  font-family:Inter,system-ui,sans-serif;
+  display:flex;flex-direction:column;
+  -webkit-font-smoothing:antialiased;
+}
+.field{position:fixed;inset:0;z-index:0;pointer-events:none}
+.field::before{content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(1100px 760px at 8% -6%, rgba(216,169,75,0.17), transparent 60%),
+    radial-gradient(900px 640px at 95% 6%, rgba(123,74,138,0.22), transparent 58%),
+    radial-gradient(1400px 900px at 50% 114%, rgba(216,169,75,0.11), transparent 62%);}
+.field::after{content:"";position:absolute;inset:0;opacity:.32;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");}
+
+.serif{font-family:'Playfair Display',Georgia,serif;letter-spacing:-0.03em;line-height:1}
+
+/* ---- header ---- */
+header{position:relative;z-index:1;display:flex;align-items:flex-end;justify-content:space-between;
+  gap:3vw;padding:3.4vh 4vw 2.4vh;border-bottom:1px solid var(--line)}
+.title{font-size:clamp(22px,2.5vw,42px);font-weight:700}
+.sub{font-size:clamp(12px,1vw,17px);color:var(--muted);margin-top:.5vh}
+.money{text-align:right;flex-shrink:0}
+.money b{display:block;font-size:clamp(40px,5.4vw,96px);font-weight:800;color:var(--gold-bright)}
+.money span{display:block;font-size:clamp(11px,.92vw,16px);color:var(--muted);margin-top:.4vh}
+
+/* ---- board ---- */
+main{position:relative;z-index:1;flex:1;display:grid;grid-template-columns:1fr 1fr;
+  gap:1.1vh 3vw;padding:2.6vh 4vw;align-content:stretch}
+.r{display:grid;grid-template-columns:clamp(34px,3.4vw,66px) 1fr;gap:1.4vw;align-items:center;
+  padding:.5vh .9vw;border-radius:12px;background:rgba(244,239,232,0.025);border:1px solid transparent;
+  transition:background-color .5s ease,border-color .5s ease,transform .5s var(--spring)}
+.r.top{background:linear-gradient(90deg,rgba(216,169,75,0.14),rgba(216,169,75,0.03));border-color:rgba(216,169,75,0.32)}
+.r.bump{transform:scale(1.015)}
+.n{font-size:clamp(20px,2.3vw,44px);font-weight:700;color:var(--faint);text-align:center}
+.r.top .n{color:var(--gold-bright)}
+.nm{display:flex;align-items:baseline;justify-content:space-between;gap:1vw;
+  font-size:clamp(15px,1.55vw,30px);font-weight:600;letter-spacing:-0.015em;line-height:1.2}
+.nm span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.amt{font-family:'Playfair Display',serif;font-size:clamp(14px,1.5vw,29px);font-weight:700;
+  color:var(--gold-bright);flex-shrink:0;opacity:0;transition:opacity .6s ease}
+body.reveal .amt{opacity:1}
+.b{height:clamp(7px,.85vh,13px);border-radius:999px;background:rgba(244,239,232,0.08);margin-top:.85vh;overflow:hidden}
+.b i{display:block;height:100%;border-radius:999px;transform-origin:left center;
+  background:linear-gradient(90deg,rgba(216,169,75,.5),var(--gold));transition:transform 1s var(--spring)}
+.r.top .b i{background:linear-gradient(90deg,var(--gold),var(--gold-bright))}
+
+/* ---- footer ---- */
+footer{position:relative;z-index:1;padding:2vh 4vw 3vh;border-top:1px solid var(--line)}
+.meter{height:clamp(8px,1vh,15px);border-radius:999px;background:rgba(244,239,232,0.09);overflow:hidden}
+.meter i{display:block;height:100%;border-radius:999px;transform-origin:left center;
+  background:linear-gradient(90deg,var(--gold),var(--gold-bright));transition:transform 1s var(--spring)}
+.frow{display:flex;justify-content:space-between;align-items:center;gap:2vw;
+  font-size:clamp(11px,.95vw,17px);color:var(--muted);margin-top:1.1vh}
+.frow em{font-style:italic;color:var(--text);font-family:'Playfair Display',serif;font-size:clamp(13px,1.15vw,21px)}
+
+/* ---- banners ---- */
+.flag{position:absolute;top:0;left:0;right:0;z-index:5;text-align:center;font-weight:700;
+  font-size:clamp(12px,1.1vw,19px);padding:.9vh 2vw;background:var(--gold);color:#140F06;
+  transform:translateY(-100%);transition:transform .4s var(--spring)}
+.flag.on{transform:translateY(0)}
+.keys{position:fixed;right:10px;bottom:8px;z-index:6;font-size:11px;color:var(--faint);
+  background:rgba(12,10,16,0.75);padding:5px 10px;border-radius:7px;border:1px solid var(--line)}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="field" aria-hidden="true"></div>
+<div class="flag" id="flag">Power hour. Every vote counts double for the next 10 minutes.</div>
+
+<header>
+  <div>
+    <div class="title serif">Dancing with the Community Stars</div>
+    <div class="sub">Iron County Children's Justice Center &middot; Heritage Center Theater</div>
+  </div>
+  <div class="money">
+    <b class="serif" id="raised">$0</b>
+    <span>raised tonight</span>
+  </div>
+</header>
+
+<main id="board"></main>
+
+<footer>
+  <div class="meter"><i id="meter"></i></div>
+  <div class="frow">
+    <span>Tonight's goal <strong style="color:var(--text)">$120,000</strong></span>
+    <em>Where small voices are heard</em>
+    <span id="status">Voting open</span>
+  </div>
+</footer>
+
+<div class="keys">R reveal totals &middot; P power hour &middot; F fullscreen</div>
+
+<script>
+const DANCERS = [
+  { id:1,  name:'Alex Rivera',    votes:4820 },
+  { id:2,  name:'Jamie Chen',     votes:4415 },
+  { id:3,  name:'Morgan Diaz',    votes:3980 },
+  { id:4,  name:'Sam Okafor',     votes:3610 },
+  { id:5,  name:'Riley Nakamura', votes:3344 },
+  { id:6,  name:'Casey Brennan',  votes:2975 },
+  { id:7,  name:'Avery Thompson', votes:2610 },
+  { id:8,  name:'Jordan Patel',   votes:2298 },
+  { id:9,  name:'Quinn Sullivan', votes:1944 },
+  { id:10, name:'Drew Martinez',  votes:1520 }
+];
+const GOAL = 120000;
+let lastBumped = null;
+
+function draw(){
+  const list = [...DANCERS].sort((a,b) => b.votes - a.votes);
+  const lead = list[0].votes;
+  document.getElementById('board').innerHTML = list.map((d,i) => `
+    <div class="r ${i===0?'top':''} ${d.id===lastBumped?'bump':''}">
+      <div class="n serif">${i+1}</div>
+      <div>
+        <div class="nm"><span>${d.name}</span><span class="amt">$${d.votes.toLocaleString('en-US')}</span></div>
+        <div class="b"><i style="transform:scaleX(${Math.max(0.06, d.votes/lead).toFixed(3)})"></i></div>
+      </div>
+    </div>`).join('');
+  const total = DANCERS.reduce((s,d) => s + d.votes, 0);
+  document.getElementById('raised').textContent = '$' + total.toLocaleString('en-US');
+  document.getElementById('meter').style.transform = 'scaleX(' + Math.min(1, total/GOAL).toFixed(3) + ')';
+}
+
+document.addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  if (k === 'r'){
+    document.body.classList.toggle('reveal');
+    document.getElementById('status').textContent =
+      document.body.classList.contains('reveal') ? 'Final totals' : 'Voting open';
+  }
+  if (k === 'p') document.getElementById('flag').classList.toggle('on');
+  if (k === 'f'){
+    document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+  }
+});
+
+/* simulated live traffic so the screen moves during a walkthrough */
+setInterval(() => {
+  const d = DANCERS[Math.floor(Math.random() * DANCERS.length)];
+  d.votes += Math.floor(Math.random() * 120) + 15;
+  lastBumped = d.id;
+  draw();
+  setTimeout(() => { lastBumped = null; draw(); }, 700);
+}, 2600);
+
+draw();
+</script>
+</body>
+</html>
