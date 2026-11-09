@@ -17,20 +17,43 @@ window.CJC = (function () {
     address   : '105 N 100 E, Cedar City',
     ticket    : 15,
     contact   : { name: 'Jennifer Davis', role: 'Iron County CJC Friends Board', phone: '435-590-1317' },
-    goal      : 120000
+    goal      : 120000,
+
+    /* What decides the winner.
+
+       'dollars' ranks on money actually raised. 'votes' ranks on vote count,
+       which includes bundle bonus votes and the free vote.
+
+       Default is 'dollars' on purpose. The free vote cannot be locked to a
+       device in any way a determined person cannot beat in ten seconds with a
+       private browsing window, so the honest fix is to make a farmed free vote
+       worth nothing to the outcome. A free vote raises $0, so under 'dollars'
+       it moves no one up the board. Switch to 'votes' only if the board
+       decides vote count is the story they want to tell. */
+    rankBy    : 'dollars'
   };
 
-  // Eight community stars, from the poster. Vote counts are sample data.
+  /* Eight community stars, from the poster. Both figures are sample data.
+
+     votes and dollars are tracked separately and MUST NOT be conflated:
+       - a free vote is 1 vote and $0
+       - a $20 bundle is 25 votes and $20, because of the bonus votes
+     So the money shown to the room is always sum(dollars), never sum(votes).
+     Standings, where they are shown at all, rank on votes. */
   const DANCERS = [
-    { id:1, slug:'riley-taylor',      name:'Riley Taylor',      votes:4120 },
-    { id:2, slug:'latosha-anderson',  name:'Latosha Anderson',  votes:3870 },
-    { id:3, slug:'mirryn-morrill',    name:'Mirryn Morrill',    votes:3655 },
-    { id:4, slug:'nicole-funderburk', name:'Nicole Funderburk', votes:3290 },
-    { id:5, slug:'rochell-topham',    name:'Rochell Topham',    votes:2980 },
-    { id:6, slug:'dave-mcintyre',     name:'Dave McIntyre',     votes:2645 },
-    { id:7, slug:'brady-williams',    name:'Brady Williams',    votes:2310 },
-    { id:8, slug:'declan-mcginty',    name:'Declan McGinty',    votes:1905 }
+    { id:1, slug:'riley-taylor',      name:'Riley Taylor',      votes:4120, dollars:3080 },
+    { id:2, slug:'latosha-anderson',  name:'Latosha Anderson',  votes:3870, dollars:2890 },
+    { id:3, slug:'mirryn-morrill',    name:'Mirryn Morrill',    votes:3655, dollars:2730 },
+    { id:4, slug:'nicole-funderburk', name:'Nicole Funderburk', votes:3290, dollars:2460 },
+    { id:5, slug:'rochell-topham',    name:'Rochell Topham',    votes:2980, dollars:2225 },
+    { id:6, slug:'dave-mcintyre',     name:'Dave McIntyre',     votes:2645, dollars:1975 },
+    { id:7, slug:'brady-williams',    name:'Brady Williams',    votes:2310, dollars:1725 },
+    { id:8, slug:'declan-mcginty',    name:'Declan McGinty',    votes:1905, dollars:1420 }
   ];
+  const raised = () => DANCERS.reduce((s, d) => s + d.dollars, 0);
+  const rankVal = d => EVENT.rankBy === 'votes' ? d.votes : d.dollars;
+  const standings = () => [...DANCERS].sort((a, b) => rankVal(b) - rankVal(a));
+  const voteTotal = () => DANCERS.reduce((s, d) => s + d.votes, 0);
 
   const JUDGES = [
     { slug:'derek-brown',   name:'Derek Brown'   },
@@ -52,9 +75,33 @@ window.CJC = (function () {
   const FEE = { pct: 0.029, fixed: 0.30, label: 'Card processing fee' };
   const feeFor = amt => Math.round((amt * FEE.pct + FEE.fixed) * 100) / 100;
 
+  /* ----------------------------------------------------------------
+     What the room is allowed to see.
+
+     The Friends board asked for the money to be public and live, but were
+     not sure about the standings. So standings are OFF by default: the
+     crowd sees the total climbing and the lineup, not who is winning.
+     The lead admin can flip either of these mid-event from Controls.
+
+     In production these live on the server and arrive with the poll.
+     Here they ride localStorage so the admin panel really does drive the
+     voter page and the big screen during a walkthrough.
+     ---------------------------------------------------------------- */
+  const flag = (key, dflt) => ({
+    get()    { try { const v = localStorage.getItem(key); return v === null ? dflt : v === '1'; } catch (e) { return dflt; } },
+    set(on)  { try { localStorage.setItem(key, on ? '1' : '0'); } catch (e) {} }
+  });
+  const DISPLAY = {
+    standings : flag('cjc_pub_standings', false),  // ranks and bars, publicly
+    dollars   : flag('cjc_pub_dollars',   false),  // per dancer dollar amounts
+    voting    : flag('cjc_voting_open',   true),
+    power     : flag('cjc_power_hour',    false)
+  };
+
   const photo = d => '../images/people/' + d.slug + '.webp';
   const money = n => '$' + n.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 });
   const plain = n => '$' + Math.round(n).toLocaleString('en-US');
 
-  return { EVENT, DANCERS, JUDGES, BUNDLES, FEE, feeFor, photo, money, plain };
+  return { EVENT, DANCERS, JUDGES, BUNDLES, FEE, DISPLAY, feeFor, raised, voteTotal,
+           rankVal, standings, photo, money, plain };
 })();

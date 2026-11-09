@@ -5,162 +5,210 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Big Screen | Battle of the Bands</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Crect%20width%3D%2732%27%20height%3D%2732%27%20rx%3D%277%27%20fill%3D%27%230E0D12%27%2F%3E%3Cpath%20d%3D%27M18.6%203%208%2018h6.2l-1.4%2011L24%2013h-6.4z%27%20fill%3D%27%23EFC247%27%2F%3E%3C%2Fsvg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..900;1,14..32,400..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#0C0A10; --surface:#15111D; --raised:#1E182A;
-  --line:rgba(244,239,232,0.10); --line-strong:rgba(244,239,232,0.20);
-  --gold:#D8A94B; --gold-bright:#F0C871;
-  --text:#F4EFE8; --muted:#A99DB4; --faint:#6E6479;
+  --ink:#0E0D12; --stage:#17161D; --riser:#201E29;
+  --line:rgba(247,242,232,0.10); --line-strong:rgba(247,242,232,0.20);
+  --red:#C9283C; --red-deep:#8C1C2C; --orange:#E07A2C;
+  --gold:#EFC247; --gold-bright:#FFD95E;
+  --text:#F7F2E8; --muted:#A49CA8; --faint:#6F6878;
   --spring:cubic-bezier(0.34,1.4,0.64,1);
+  --flame:linear-gradient(90deg,var(--red-deep),var(--red) 35%,var(--orange) 68%,var(--gold));
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
-body{
-  background:var(--ink);color:var(--text);
-  font-family:Inter,system-ui,sans-serif;
-  display:flex;flex-direction:column;
-  -webkit-font-smoothing:antialiased;
-}
+body{background:var(--ink);color:var(--text);font-family:Inter,system-ui,sans-serif;
+  display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+.anton{font-family:Anton,Impact,sans-serif;letter-spacing:0.01em;line-height:1;
+  text-transform:uppercase;font-variant-numeric:tabular-nums}
+
 .field{position:fixed;inset:0;z-index:0;pointer-events:none}
 .field::before{content:"";position:absolute;inset:0;
   background:
-    radial-gradient(1100px 760px at 8% -6%, rgba(216,169,75,0.17), transparent 60%),
-    radial-gradient(900px 640px at 95% 6%, rgba(123,74,138,0.22), transparent 58%),
-    radial-gradient(1400px 900px at 50% 114%, rgba(216,169,75,0.11), transparent 62%);}
-.field::after{content:"";position:absolute;inset:0;opacity:.32;mix-blend-mode:overlay;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");}
+    radial-gradient(1000px 680px at 50% -8%, rgba(201,40,60,0.26), transparent 62%),
+    radial-gradient(900px 620px at 6% 20%, rgba(239,194,71,0.11), transparent 58%),
+    radial-gradient(900px 620px at 95% 26%, rgba(201,40,60,0.14), transparent 58%),
+    linear-gradient(180deg,#221F2A 0%,#15141A 40%,#0E0D12 100%);}
+.field::after{content:"";position:absolute;inset:0;opacity:.34;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");}
+.rail{position:fixed;top:0;bottom:0;z-index:0;width:clamp(120px,11vw,230px);opacity:.70;pointer-events:none}
+.rail img{width:100%;height:100%;object-fit:contain}
+.rail-l{left:0}.rail-r{right:0}
 
-.serif{font-family:Inter,system-ui,-apple-system,sans-serif;font-weight:800;letter-spacing:-0.03em;line-height:1}
+header{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;
+  gap:3vw;padding:2.8vh 4vw 2.2vh;border-bottom:1px solid var(--line)}
+header img{height:clamp(52px,7.4vh,112px);width:auto}
+.when{text-align:right;font-size:clamp(11px,.95vw,17px);color:var(--muted);line-height:1.5}
+.when b{display:block;color:var(--text);font-weight:600}
 
-/* ---- header ---- */
-header{position:relative;z-index:1;display:flex;align-items:flex-end;justify-content:space-between;
-  gap:3vw;padding:3.4vh 4vw 2.4vh;border-bottom:1px solid var(--line)}
-.title{font-size:clamp(22px,2.5vw,42px);font-weight:700}
-.sub{font-size:clamp(12px,1vw,17px);color:var(--muted);margin-top:.5vh}
-.money{text-align:right;flex-shrink:0}
-.money b{display:block;font-size:clamp(40px,5.4vw,96px);font-weight:800;color:var(--gold-bright)}
-.money span{display:block;font-size:clamp(11px,.92vw,16px);color:var(--muted);margin-top:.4vh}
+main{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;
+  padding:2.2vh 4vw;min-height:0}
 
-/* ---- board ---- */
-main{position:relative;z-index:1;flex:1;display:grid;grid-template-columns:1fr 1fr;
-  gap:1.1vh 3vw;padding:2.6vh 4vw;align-content:stretch}
-.r{display:grid;grid-template-columns:clamp(34px,3.4vw,66px) clamp(44px,4.2vw,82px) 1fr;gap:1.2vw;align-items:center;
-  padding:.5vh .9vw;border-radius:12px;background:rgba(244,239,232,0.025);border:1px solid transparent;
-  transition:background-color .5s ease,border-color .5s ease,transform .5s var(--spring)}
-.r.top{background:linear-gradient(90deg,rgba(216,169,75,0.14),rgba(216,169,75,0.03));border-color:rgba(216,169,75,0.32)}
+/* ---------------- MONEY MODE (default) ---------------- */
+.money{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.4vh;min-height:0}
+.money .big{font-size:clamp(90px,19vw,340px);color:var(--gold-bright);
+  text-shadow:0 6px 0 rgba(0,0,0,0.35)}
+.money .cap{font-size:clamp(14px,1.7vw,32px);color:var(--muted);letter-spacing:0.02em}
+.money .cap b{color:var(--text);font-weight:600}
+body.standings .money{display:none}
+
+.faces{display:flex;justify-content:center;gap:clamp(8px,1.4vw,26px);padding-top:1.6vh;flex-wrap:nowrap}
+.face{text-align:center;min-width:0}
+.face img{width:clamp(46px,5.6vw,104px);aspect-ratio:1;border-radius:50%;object-fit:cover;
+  display:block;margin:0 auto .7vh;border:2px solid var(--line-strong)}
+.face span{display:block;font-size:clamp(9px,.86vw,16px);color:var(--muted);line-height:1.25;
+  max-width:clamp(62px,7vw,132px);margin:0 auto}
+body.standings .faces{display:none}
+
+/* ---------------- STANDINGS MODE ---------------- */
+.board{display:none;flex:1;grid-template-columns:1fr 1fr;gap:1.1vh 3vw;align-content:stretch;min-height:0}
+body.standings .board{display:grid}
+.r{display:grid;grid-template-columns:clamp(30px,3vw,58px) clamp(42px,4vw,76px) 1fr;gap:1.2vw;
+  align-items:center;padding:.5vh .9vw;border-radius:12px;background:rgba(247,242,232,0.025);
+  border:1px solid transparent;transition:background-color .5s ease,border-color .5s ease,transform .5s var(--spring)}
+.r.top{background:linear-gradient(90deg,rgba(239,194,71,0.15),rgba(239,194,71,0.03));border-color:rgba(239,194,71,0.34)}
 .r.bump{transform:scale(1.015)}
-.pic{width:100%;aspect-ratio:1;border-radius:50%;overflow:hidden;border:2px solid var(--line-strong);background:var(--raised)}
+.n{font-size:clamp(19px,2.2vw,42px);color:var(--faint);text-align:center}
+.r.top .n{color:var(--gold-bright)}
+.pic{width:100%;aspect-ratio:1;border-radius:50%;overflow:hidden;border:2px solid var(--line-strong);background:var(--riser)}
 .r.top .pic{border-color:var(--gold)}
 .pic img{width:100%;height:100%;object-fit:cover;display:block}
-.n{font-size:clamp(20px,2.3vw,44px);font-weight:700;color:var(--faint);text-align:center}
-.r.top .n{color:var(--gold-bright)}
 .nm{display:flex;align-items:baseline;justify-content:space-between;gap:1vw;
-  font-size:clamp(15px,1.55vw,30px);font-weight:600;letter-spacing:-0.015em;line-height:1.2}
-.nm span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.amt{font-family:Inter,system-ui,-apple-system,sans-serif;font-size:clamp(14px,1.5vw,29px);font-weight:700;
-  color:var(--gold-bright);flex-shrink:0;opacity:0;transition:opacity .6s ease}
-body.reveal .amt{opacity:1}
-.b{height:clamp(7px,.85vh,13px);border-radius:999px;background:rgba(244,239,232,0.08);margin-top:.85vh;overflow:hidden}
-.b i{display:block;height:100%;border-radius:999px;transform-origin:left center;
-  background:linear-gradient(90deg,rgba(216,169,75,.5),var(--gold));transition:transform 1s var(--spring)}
-.r.top .b i{background:linear-gradient(90deg,var(--gold),var(--gold-bright))}
+  font-size:clamp(14px,1.5vw,29px);font-weight:600;letter-spacing:-0.015em;line-height:1.2}
+.nm span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.amt{font-family:Anton,Impact,sans-serif;font-size:clamp(13px,1.45vw,28px);color:var(--gold-bright);
+  flex-shrink:0;opacity:0;transition:opacity .6s ease;font-variant-numeric:tabular-nums}
+body.dollars .amt{opacity:1}
+.b{height:clamp(6px,.8vh,12px);border-radius:999px;background:rgba(247,242,232,0.08);margin-top:.8vh;overflow:hidden}
+.b i{display:block;height:100%;border-radius:999px;transform-origin:left center;background:var(--flame);
+  transition:transform 1s var(--spring)}
 
-/* ---- footer ---- */
-footer{position:relative;z-index:1;padding:2vh 4vw 3vh;border-top:1px solid var(--line)}
-.meter{height:clamp(8px,1vh,15px);border-radius:999px;background:rgba(244,239,232,0.09);overflow:hidden}
-.meter i{display:block;height:100%;border-radius:999px;transform-origin:left center;
-  background:linear-gradient(90deg,var(--gold),var(--gold-bright));transition:transform 1s var(--spring)}
+footer{position:relative;z-index:1;padding:1.6vh 4vw 2.2vh;border-top:1px solid var(--line)}
+.meter{height:clamp(10px,1.3vh,20px);border-radius:999px;background:rgba(247,242,232,0.09);overflow:hidden}
+.meter i{display:block;height:100%;border-radius:999px;transform-origin:left center;background:var(--flame);
+  transition:transform 1s var(--spring)}
 .frow{display:flex;justify-content:space-between;align-items:center;gap:2vw;
   font-size:clamp(11px,.95vw,17px);color:var(--muted);margin-top:1.1vh}
-.frow em{font-style:italic;color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif;font-size:clamp(13px,1.15vw,21px)}
+.frow strong{color:var(--text)}
+.frow .mid{display:flex;align-items:center;gap:1vw}
+.frow .qr{height:clamp(72px,9vh,132px);width:auto;border-radius:7px;background:#fff;padding:5px}
+.frow .scan{text-align:left;line-height:1.3}
+.frow .scan b{display:block;color:var(--text);font-size:clamp(13px,1.3vw,25px);font-weight:700}
 
-/* ---- banners ---- */
 .flag{position:absolute;top:0;left:0;right:0;z-index:5;text-align:center;font-weight:700;
-  font-size:clamp(12px,1.1vw,19px);padding:.9vh 2vw;background:var(--gold);color:#140F06;
+  font-size:clamp(12px,1.1vw,19px);padding:.9vh 2vw;background:var(--gold);color:#17120A;
   transform:translateY(-100%);transition:transform .4s var(--spring)}
 .flag.on{transform:translateY(0)}
 .keys{position:fixed;right:10px;bottom:8px;z-index:6;font-size:11px;color:var(--faint);
-  background:rgba(12,10,16,0.75);padding:5px 10px;border-radius:7px;border:1px solid var(--line)}
+  background:rgba(14,13,18,0.78);padding:5px 10px;border-radius:7px;border:1px solid var(--line)}
 @media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
 <div class="field" aria-hidden="true"></div>
-<div class="flag" id="flag">Power hour. Every vote counts double for the next 10 minutes.</div>
+<div class="rail rail-l" aria-hidden="true"><img src="../images/art/art-guitar-left.webp" alt=""></div>
+<div class="rail rail-r" aria-hidden="true"><img src="../images/art/art-guitar-right.webp" alt=""></div>
+<div class="flag" id="flag">Power hour. Every vote counts double for the next ten minutes.</div>
 
 <header>
-  <div>
-    <div class="title serif">Dancing with the Community Stars</div>
-    <div class="sub">Battle of the Bands &middot; Heritage Center Theatre &middot; Iron County Children's Justice Center</div>
-  </div>
-  <div class="money">
-    <b class="serif" id="raised">$0</b>
-    <span>raised tonight</span>
+  <img src="../images/art/logo-botb.webp" alt="Battle of the Bands">
+  <div class="when">
+    <b>Dancing with the Community Stars</b>
+    Heritage Center Theatre &middot; for the Iron County Children's Justice Center
   </div>
 </header>
 
-<main id="board"></main>
+<main>
+  <div class="money">
+    <div class="big anton" id="big">$0</div>
+    <div class="cap">raised tonight for the <b>Children's Justice Center</b></div>
+  </div>
+  <div class="faces" id="faces"></div>
+  <div class="board" id="board"></div>
+</main>
 
 <footer>
   <div class="meter"><i id="meter"></i></div>
   <div class="frow">
-    <span>Tonight's goal <strong style="color:var(--text)">$120,000</strong></span>
-    <em>Where small voices are heard</em>
+    <span>Tonight's goal <strong id="goal">$120,000</strong></span>
+    <div class="mid">
+      <img class="qr" id="qr" src="../images/qr-vote.png" alt="">
+      <div class="scan"><b>Scan to vote</b><span id="shorturl">from any seat, or from home</span></div>
+    </div>
     <span id="status">Voting open</span>
   </div>
 </footer>
 
-<div class="keys">R reveal totals &middot; P power hour &middot; F fullscreen</div>
+<div class="keys">R standings &middot; D dollar totals &middot; P power hour &middot; F fullscreen</div>
 
 <script src="../shared/event.js"></script>
 <script>
-const DANCERS = CJC.DANCERS;
-const GOAL = CJC.EVENT.goal;
+const DANCERS = CJC.DANCERS, GOAL = CJC.EVENT.goal, D = CJC.DISPLAY;
 let lastBumped = null;
 
-function draw(){
-  const list = [...DANCERS].sort((a,b) => b.votes - a.votes);
-  const lead = list[0].votes;
-  document.getElementById('board').innerHTML = list.map((d,i) => `
-    <div class="r ${i===0?'top':''} ${d.id===lastBumped?'bump':''}">
-      <div class="n serif">${i+1}</div>
-      <div class="pic"><img src="${CJC.photo(d)}" alt="" loading="lazy"></div>
-      <div>
-        <div class="nm"><span>${d.name}</span><span class="amt">$${d.votes.toLocaleString('en-US')}</span></div>
-        <div class="b"><i style="transform:scaleX(${Math.max(0.06, d.votes/lead).toFixed(3)})"></i></div>
-      </div>
-    </div>`).join('');
-  const total = DANCERS.reduce((s,d) => s + d.votes, 0);
-  document.getElementById('raised').textContent = '$' + total.toLocaleString('en-US');
-  document.getElementById('meter').style.transform = 'scaleX(' + Math.min(1, total/GOAL).toFixed(3) + ')';
+const total = CJC.raised;   // dollars raised, not vote count
+
+function drawFaces(){
+  document.getElementById('faces').innerHTML = DANCERS.map(d =>
+    `<div class="face"><img src="${CJC.photo(d)}" alt=""><span>${d.name}</span></div>`).join('');
 }
 
-document.addEventListener('keydown', e => {
+function drawBoard(){
+  const list = CJC.standings(), lead = CJC.rankVal(list[0]);
+  document.getElementById('board').innerHTML = list.map((d,i) => `
+    <div class="r ${i===0?'top':''} ${d.id===lastBumped?'bump':''}">
+      <div class="n anton">${i+1}</div>
+      <div class="pic"><img src="${CJC.photo(d)}" alt="" loading="lazy"></div>
+      <div>
+        <div class="nm"><span>${d.name}</span><span class="amt">${CJC.plain(d.dollars)}</span></div>
+        <div class="b"><i style="transform:scaleX(${Math.max(0.06, CJC.rankVal(d)/lead).toFixed(3)})"></i></div>
+      </div>
+    </div>`).join('');
+}
+
+function drawMoney(){
+  const t = total();
+  document.getElementById('big').textContent = CJC.plain(t);
+  document.getElementById('meter').style.transform = 'scaleX(' + Math.min(1, t/GOAL).toFixed(3) + ')';
+}
+
+/* the lead admin drives these from the Controls tab; mirror them here */
+function syncFlags(){
+  document.body.classList.toggle('standings', D.standings.get());
+  document.body.classList.toggle('dollars',  D.dollars.get());
+  document.getElementById('flag').classList.toggle('on', D.power.get());
+  document.getElementById('status').textContent =
+    !D.voting.get() ? 'Voting closed' : D.dollars.get() ? 'Final totals' : 'Voting open';
+}
+addEventListener('storage', syncFlags);
+setInterval(syncFlags, 1000);
+
+addEventListener('keydown', e => {
   const k = e.key.toLowerCase();
-  if (k === 'r'){
-    document.body.classList.toggle('reveal');
-    document.getElementById('status').textContent =
-      document.body.classList.contains('reveal') ? 'Final totals' : 'Voting open';
-  }
-  if (k === 'p') document.getElementById('flag').classList.toggle('on');
-  if (k === 'f'){
-    document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
-  }
+  if (k === 'r') D.standings.set(!D.standings.get());
+  if (k === 'd') D.dollars.set(!D.dollars.get());
+  if (k === 'p') D.power.set(!D.power.get());
+  if (k === 'f') document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+  syncFlags();
 });
 
-/* simulated live traffic so the screen moves during a walkthrough */
+/* simulated traffic so the screen moves during a walkthrough */
 setInterval(() => {
-  const d = DANCERS[Math.floor(Math.random() * DANCERS.length)];
-  d.votes += Math.floor(Math.random() * 120) + 15;
+  const d = DANCERS[Math.floor(Math.random()*DANCERS.length)];
+  const cash = [5,20,50,100][Math.floor(Math.random()*4)];
+  d.dollars += cash;
+  d.votes   += ({5:5, 20:25, 50:75, 100:175})[cash];
   lastBumped = d.id;
-  draw();
-  setTimeout(() => { lastBumped = null; draw(); }, 700);
+  drawBoard(); drawMoney();
+  setTimeout(() => { lastBumped = null; drawBoard(); }, 700);
 }, 2600);
 
-draw();
+document.getElementById('goal').textContent = CJC.plain(GOAL);
+drawFaces(); drawBoard(); drawMoney(); syncFlags();
 </script>
 </body>
 </html>

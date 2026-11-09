@@ -6,6 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Admin | Battle of the Bands</title>
 <meta name="theme-color" content="#0C0A10">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Crect%20width%3D%2732%27%20height%3D%2732%27%20rx%3D%277%27%20fill%3D%27%230E0D12%27%2F%3E%3Cpath%20d%3D%27M18.6%203%208%2018h6.2l-1.4%2011L24%2013h-6.4z%27%20fill%3D%27%23EFC247%27%2F%3E%3C%2Fsvg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..900;1,14..32,400..900&display=swap" rel="stylesheet">
@@ -240,6 +241,16 @@ nav button.on{color:var(--gold-bright)}
       </div>
     </section>
 
+    <!-- ---- STANDINGS ---- -->
+    <section class="pane" id="p-standings">
+      <div class="card">
+        <h2>Live standings</h2>
+        <p class="sub">Staff only. The room sees the money climbing, not this, unless you switch standings on in Controls. Ranked on money raised, so a farmed free vote cannot move anyone up the board. The vote count beside each name is higher, because bundles carry bonus votes and the free vote adds one.</p>
+        <div class="kv tot" style="margin-top:0;border-top:0;padding-top:0"><span>Raised tonight</span><b id="st-total">$0</b></div>
+        <div class="rows" id="stand" style="margin-top:var(--s4)"></div>
+      </div>
+    </section>
+
     <!-- ---- CONTROLS ---- -->
     <section class="pane" id="p-controls">
       <div class="card">
@@ -250,7 +261,11 @@ nav button.on{color:var(--gold-bright)}
           <button class="toggle" id="t-vote" aria-pressed="true"><span class="sr">Voting open</span></button>
         </div>
         <div class="sw">
-          <div><b>Reveal dollar totals</b><small>Flips the big screen from rank to real amounts</small></div>
+          <div><b>Show standings to the room</b><small>Off by default. The crowd sees the total and the lineup, not who is winning</small></div>
+          <button class="toggle" id="t-standings" aria-pressed="false"><span class="sr">Show standings</span></button>
+        </div>
+        <div class="sw">
+          <div><b>Reveal dollar totals</b><small>Puts real amounts next to each dancer. For the finale</small></div>
           <button class="toggle" id="t-reveal" aria-pressed="false"><span class="sr">Reveal totals</span></button>
         </div>
         <div class="sw">
@@ -289,6 +304,16 @@ nav button.on{color:var(--gold-bright)}
    Roster comes from shared/event.js so it cannot drift.
    ========================================================= */
 const DANCERS = CJC.DANCERS.map(d => d.name);
+
+/* Manual credits are real money, so they move the dancer's totals too and the
+   big screen jumps the moment a clerk enters cash. $1 is 1 vote, with no bonus:
+   bundles only exist on the card path. */
+function applyToDancer(name, amount){
+  const d = CJC.DANCERS.find(x => x.name === name);
+  if (!d) return;
+  d.dollars += amount;
+  d.votes   += amount;
+}
 const PINS = { '1111':'Cash table 1', '2222':'Cash table 2', '3333':'Cash table 3', '9999':'Lead admin' };
 const METHODS = ['Cash','Check','Card reader','Pledge'];
 const QUICK = [20,50,100,250];
@@ -343,13 +368,14 @@ function start(){
     venmo:    svg('<circle cx="12" cy="12" r="8.6"/><path d="M12 7.2V12l3.2 2"/>'),
     entries:  svg('<path d="M4.5 7h15M4.5 12h15M4.5 17h9.5"/>'),
     controls: svg('<path d="M3.6 8.5h16.8M3.6 15.5h16.8"/><circle cx="9" cy="8.5" r="2.5"/><circle cx="15.6" cy="15.5" r="2.5"/>'),
-    recon:    svg('<path d="M6.4 3.2h11.2v17.6l-2.8-1.9-2.8 1.9-2.8-1.9-2.8 1.9z"/><path d="M9.6 8.4h4.8M9.6 12.4h4.8"/>')
+    recon:    svg('<path d="M6.4 3.2h11.2v17.6l-2.8-1.9-2.8 1.9-2.8-1.9-2.8 1.9z"/><path d="M9.6 8.4h4.8M9.6 12.4h4.8"/>'),
+    standings:svg('<path d="M4.6 20.4V11M9.9 20.4V5.2M15.2 20.4v-6.9M20.5 20.4V8.6"/>')
   };
   const defs = [['credit','Credit'],['venmo','Venmo'],['entries','Entries'],
-    ...(lead ? [['controls','Controls'],['recon','Reconcile']] : [])];
+    ...(lead ? [['standings','Standings'],['controls','Controls'],['recon','Reconcile']] : [])];
   $('#tabs').innerHTML = defs.map(([id,label]) =>
     `<button data-t="${id}" class="${id===tab?'on':''}">${ICON[id]}${label}</button>`).join('');
-  if (!lead && (tab === 'controls' || tab === 'recon')) show('credit');
+  if (!lead && ['controls','recon','standings'].includes(tab)) show('credit');
   audit('signed in');
   drawAll();
 }
@@ -406,6 +432,7 @@ $('#submit').addEventListener('click', () => {
   const dancer = $('#d').value, note = $('#note').value.trim();
   if (amt >= BIG && !confirm('Confirm ' + money(amt) + ' in ' + method.toLowerCase() + ' for ' + dancer + '?')) return;
   entries.unshift({ id:Date.now(), who:me, dancer, amount:amt, method, note, t:now(), void:false });
+  applyToDancer(dancer, amt);
   audit('credited ' + money(amt) + ' (' + method + ') to ' + dancer + (note ? ' [' + note + ']' : ''));
   toast(money(amt) + ' credited to ' + dancer.split(' ')[0]);
   amt = 0; $('#note').value = ''; drawAmt(); drawList(); drawRecon();
@@ -428,7 +455,10 @@ $('#vq').addEventListener('click', e => {
   const code = (ok || no).dataset.ok || (ok || no).dataset.no;
   const v = venmo.find(x => x.code === code);
   v.state = ok ? 'confirmed' : 'reversed';
-  if (ok) entries.unshift({ id:Date.now(), who:me, dancer:v.dancer, amount:v.amount, method:'Venmo', note:v.code, t:now(), void:false });
+  if (ok){
+    entries.unshift({ id:Date.now(), who:me, dancer:v.dancer, amount:v.amount, method:'Venmo', note:v.code, t:now(), void:false });
+    applyToDancer(v.dancer, v.amount);
+  }
   audit((ok ? 'confirmed ' : 'reversed ') + code + ' (' + money(v.amount) + ', ' + v.dancer + ')');
   toast(ok ? code + ' confirmed' : code + ' reversed');
   drawVenmo(); drawList(); drawRecon();
@@ -453,19 +483,29 @@ $('#list').addEventListener('click', e => {
   const en = entries.find(x => x.id === Number(b.dataset.v));
   if (!confirm('Reverse ' + money(en.amount) + ' for ' + en.dancer + '? This posts an offsetting entry.')) return;
   en.void = true;
+  applyToDancer(en.dancer, -en.amount);
   audit('reversed ' + money(en.amount) + ' for ' + en.dancer);
   toast('Entry reversed');
   drawList(); drawRecon();
 });
 
 /* ---------------- controls ---------------- */
-['t-vote','t-reveal','t-power'].forEach(id => {
-  $('#' + id).addEventListener('click', e => {
-    const b = e.currentTarget;
+/* These write to CJC.DISPLAY, which the voter page and the big screen read.
+   Flipping one here really does change what the room sees. */
+const TOGGLES = {
+  't-vote':      { flag: CJC.DISPLAY.voting,    label: 'voting' },
+  't-standings': { flag: CJC.DISPLAY.standings, label: 'standings for the room' },
+  't-reveal':    { flag: CJC.DISPLAY.dollars,   label: 'dollar totals' },
+  't-power':     { flag: CJC.DISPLAY.power,     label: 'power hour' }
+};
+Object.entries(TOGGLES).forEach(([id, { flag, label }]) => {
+  const b = $('#' + id);
+  b.setAttribute('aria-pressed', flag.get());
+  b.addEventListener('click', () => {
     const on = b.getAttribute('aria-pressed') !== 'true';
     b.setAttribute('aria-pressed', on);
-    const label = { 't-vote':'voting', 't-reveal':'dollar totals', 't-power':'power hour' }[id];
-    audit((on ? 'opened ' : 'closed ') + label);
+    flag.set(on);
+    audit((on ? 'turned on ' : 'turned off ') + label);
     toast(label[0].toUpperCase() + label.slice(1) + (on ? ' on' : ' off'));
     if (id === 't-vote'){
       $('#vstate').textContent = on ? 'Voting open' : 'Voting closed';
@@ -473,6 +513,26 @@ $('#list').addEventListener('click', e => {
     }
   });
 });
+$('#vstate').textContent = CJC.DISPLAY.voting.get() ? 'Voting open' : 'Voting closed';
+$('#vstate').classList.toggle('on', CJC.DISPLAY.voting.get());
+
+function drawStandings(){
+  const list = CJC.standings();
+  const lead = CJC.rankVal(list[0]);
+  $('#st-total').textContent = CJC.plain(CJC.raised());
+  $('#stand').innerHTML = list.map((d,i) => `
+    <div class="item">
+      <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;width:22px;text-align:center;color:${i===0?'var(--gold-bright)':'var(--faint)'}">${i+1}</div>
+      <div class="g">
+        <b>${d.name}</b>
+        <div style="height:5px;border-radius:999px;background:rgba(244,239,232,0.08);margin-top:6px;overflow:hidden">
+          <i style="display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#8C1C2C,#C9283C 42%,#E07A2C 74%,#EFC247);transform:scaleX(${(CJC.rankVal(d)/lead).toFixed(3)});transform-origin:left"></i>
+        </div>
+      </div>
+      <span class="v" style="text-align:right"><span style="display:block">${CJC.plain(d.dollars)}</span><small style="display:block;font-size:11px;color:var(--faint);font-family:Inter,sans-serif;font-weight:500">${d.votes.toLocaleString('en-US')} votes</small></span>
+    </div>`).join('');
+}
+setInterval(() => { if (me) drawStandings(); }, 2000);
 
 /* ---------------- reconcile ---------------- */
 function drawRecon(){
@@ -481,7 +541,7 @@ function drawRecon(){
   const byTable = tables.map(t => [t, live.filter(e => e.who === t).reduce((s,e) => s + e.amount, 0)]).filter(x => x[1] > 0);
   const byMethod = [...METHODS,'Venmo'].map(m => [m, live.filter(e => e.method === m).reduce((s,e) => s + e.amount, 0)]).filter(x => x[1] > 0);
   const manual = live.reduce((s,e) => s + e.amount, 0);
-  const digital = 31544; // stand-in for the Square total
+  const digital = Math.max(0, CJC.raised() - manual); // Square side
   $('#recon').innerHTML =
     '<div class="kv"><span>Square, card and wallets</span><b>' + money(digital) + '</b></div>' +
     byMethod.map(([m,v]) => '<div class="kv"><span>' + m + '</span><b>' + money(v) + '</b></div>').join('') +
@@ -499,7 +559,7 @@ function drawLog(){
     : '<div>Nothing logged yet.</div>';
 }
 
-function drawAll(){ drawAmt(); drawVenmo(); drawList(); drawRecon(); drawLog(); }
+function drawAll(){ drawAmt(); drawVenmo(); drawList(); drawRecon(); drawLog(); drawStandings(); }
 drawPins();
 </script>
 </body>

@@ -6,6 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Live voting prototype | Battle of the Bands</title>
 <meta name="theme-color" content="#0C0A10">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2032%2032%27%3E%3Crect%20width%3D%2732%27%20height%3D%2732%27%20rx%3D%277%27%20fill%3D%27%230E0D12%27%2F%3E%3Cpath%20d%3D%27M18.6%203%208%2018h6.2l-1.4%2011L24%2013h-6.4z%27%20fill%3D%27%23EFC247%27%2F%3E%3C%2Fsvg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..900;1,14..32,400..900&display=swap" rel="stylesheet">
@@ -86,71 +87,70 @@ footer{margin-top:var(--s8);padding-top:var(--s5);border-top:1px solid var(--lin
 <div class="wrap">
 
   <h1>Live voting for <em>Battle of the Bands</em></h1>
-  <p class="sub">A working prototype for Dancing with the Community Stars: Battle of the Bands, Monday November 17 at the Heritage Center Theatre. Real lineup, real event details. Tap through it on your phone. Two looks for the voter screen, plus the big screen and the admin side used at the cash tables.</p>
+  <p class="sub">Dancing with the Community Stars, Monday 17 November, Heritage Center Theatre. Real lineup, real event details. Tap through it on your phone. Three screens: what the audience uses, what goes on the projector, and what the cash tables run.</p>
 
-  <div class="grid">
+  <div class="grid" style="grid-template-columns:1fr">
     <a class="card" href="v1-battle/">
-      <div class="shot tall"><img src="images/thumb-battle.webp" alt="Battle of the Bands voter screen" width="430" height="560" loading="lazy"></div>
+      <div class="shot tall" style="aspect-ratio:430/420"><img src="images/thumb-battle.webp" alt="Battle of the Bands voter screen" width="430" height="420" loading="lazy"></div>
       <div class="body">
-        <h2>Battle of the Bands</h2>
-        <p>Built from the event poster: its flames, guitars, logos and palette, with Anton carrying the headlines. Dark, so it reads on a phone in a dark theatre.</p>
+        <h2>The voting page</h2>
+        <p>What everyone scans into, in the theatre or watching from home. Built from the event poster: its flames, guitars, logos and palette. The total raised is live and public; the standings are not, unless an admin turns them on.</p>
         <div class="sw" aria-hidden="true">
           <i style="background:#0E0D12"></i><i style="background:#C9283C"></i><i style="background:#E07A2C"></i><i style="background:#EFC247"></i>
         </div>
-        <span class="open">Open the voter screen <span>&rarr;</span></span>
-      </div>
-    </a>
-
-    <a class="card" href="v2-hopeful/">
-      <div class="shot tall"><img src="images/thumb-hopeful.webp" alt="Light cream voter screen with teal leaderboard" width="430" height="560" loading="lazy"></div>
-      <div class="body">
-        <h2>Hopeful</h2>
-        <p>Warm cream and deep teal, set in Inter to match ironcountyut.gov. Reads as a children's charity first and a competition second.</p>
-        <div class="sw" aria-hidden="true">
-          <i style="background:#FBF6EE"></i><i style="background:#1C5465"></i><i style="background:#C2742A"></i><i style="background:#172A33"></i>
-        </div>
-        <span class="open">Open the voter screen <span>&rarr;</span></span>
+        <span class="open">Open the voting page <span>&rarr;</span></span>
       </div>
     </a>
   </div>
 
   <div class="sec">
     <h2>The other two screens</h2>
-    <p>These are shared. Whichever look the board picks for the voter screen, the big screen stays dark for the theatre and the admin side stays a plain utility.</p>
+    <p>The projector leads with the money, not the leaderboard. The admin side is where staff can see who is actually in front.</p>
     <div class="pair">
       <a class="card" href="display/">
-        <div class="shot wide fit"><img src="images/thumb-display.webp" alt="Projector leaderboard" width="1280" height="660" loading="lazy"></div>
+        <div class="shot wide fit"><img src="images/thumb-display.webp" alt="Projector screen" width="1280" height="660" loading="lazy"></div>
         <div class="body">
           <h2>Big screen</h2>
-          <p>For the projector. Rank and bars all night, then press R to reveal real dollar totals at the finale.</p>
+          <p>Giant running total, the goal thermometer, the eight faces and a scan-to-vote QR. No standings unless you ask for them.</p>
           <span class="open">Open the big screen <span>&rarr;</span></span>
         </div>
       </a>
       <a class="card" href="admin/">
-        <div class="shot wide"><img src="images/thumb-admin.webp" alt="Admin credit screen" width="1280" height="660" loading="lazy"></div>
+        <div class="shot wide"><img src="images/thumb-admin.webp" alt="Admin screen" width="1280" height="660" loading="lazy"></div>
         <div class="body">
           <h2>Admin</h2>
-          <p>What the cash tables use. Credit cash and checks, work the Venmo queue, reverse mistakes, balance each drawer.</p>
+          <p>Live standings for staff, cash and check credits, the Venmo queue, reversals, per-drawer reconciliation, and the switches that decide what the room sees.</p>
           <span class="open">Open the admin side <span>&rarr;</span></span>
         </div>
       </a>
     </div>
     <div class="keys">
       <b>Codes for the walkthrough</b>
-      Admin, cash tables: <code>1111</code> <code>2222</code> <code>3333</code> &middot; lead admin, who also gets controls and reconciliation: <code>9999</code><br>
-      Big screen: <code>R</code> reveal totals &middot; <code>P</code> power hour &middot; <code>F</code> fullscreen
+      Admin, cash tables: <code>1111</code> <code>2222</code> <code>3333</code> &middot; lead admin, who also gets standings, controls and reconciliation: <code>9999</code><br>
+      Big screen: <code>R</code> standings &middot; <code>D</code> dollar totals &middot; <code>P</code> power hour &middot; <code>F</code> fullscreen<br>
+      Try it: open the admin side as <code>9999</code>, go to Controls, switch on "Show standings to the room", then reload the voting page.
     </div>
+  </div>
+
+  <div class="sec">
+    <h2>What the board asked for, and where it landed</h2>
+    <ul>
+      <li><span><b>The crowd sees the money, not the leader.</b> The running total is the hero on both the phone and the projector. Standings are off by default and the lineup keeps the poster's own order so nothing implies a ranking. One switch in Controls turns them on if you change your mind mid-show.</span></li>
+      <li><span><b>Staff see everything.</b> Lead admin gets a live Standings tab with ranks, bars and dollar amounts, plus the running total and per-drawer reconciliation.</span></li>
+      <li><span><b>People watching online can vote.</b> The page is the same link from any seat or any sofa. Free vote is one per device either way.</span></li>
+      <li><span><b>"How do I vote?"</b> sits next to the vote buttons in three places. It opens a four step walkthrough with a slot for the social video.</span></li>
+      <li><span><b>A QR that never changes.</b> On the projector, and ready to print. It needs a permanent address before anything goes to print, see below.</span></li>
+    </ul>
   </div>
 
   <div class="sec">
     <h2>What is not real yet</h2>
     <ul>
       <li><span><b>Payments.</b> Nothing charges a card. Square goes in once the account is verified and API credentials are issued.</span></li>
-      <li><span><b>Photos.</b> All eight dancers are the real lineup, but the headshots were lifted from the poster at about 160px. We need the originals from the Friends board before launch.</span></li>
+      <li><span><b>The QR points at this preview.</b> Before it goes on a poster or a table tent it has to point at the final address, and that address can never change afterwards.</span></li>
+      <li><span><b>Photos.</b> All eight dancers are the real lineup, but the headshots were lifted from the poster at about 160px. We need the originals.</span></li>
       <li><span><b>Totals.</b> Sample numbers that drift on their own so the screens look alive during a demo.</span></li>
-      <li><span><b>The goal.</b> $120,000 is a stand-in. Last reported year was $109,797.</span></li>
-      <li><span><b>Bundle pricing.</b> $5, $20, $50 and $100 are a starting point. Single $1 votes are deliberately not offered, because processing fees eat about a third of a one dollar charge.</span></li>
-      <li><span><b>The processing fee is itemised</b> on both directions, labelled as cards and wallets only, with a line showing exactly what the Center receives either way.</span></li>
+      <li><span><b>The how-to video.</b> The slot is in place. Script and shot list are in the project folder.</span></li>
     </ul>
   </div>
 
