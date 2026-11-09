@@ -9,7 +9,7 @@ window.CJC = (function () {
     theme     : 'Battle of the Bands',
     beneficiary: "Iron County Children's Justice Center",
     tagline   : 'Where small voices are heard',
-    dateLong  : 'Monday, November 17',
+    dateLong  : 'Tuesday, November 17',
     showTime  : '7:00 PM',
     lobby     : '6:00 PM',
     house     : '6:30 PM',
@@ -40,16 +40,50 @@ window.CJC = (function () {
        - a $20 bundle is 25 votes and $20, because of the bonus votes
      So the money shown to the room is always sum(dollars), never sum(votes).
      Standings, where they are shown at all, rank on votes. */
+  /* cashGifts / onlineGifts count PEOPLE, not dollars: one gift is one giver.
+     cash  = handed to a volunteer at a table (cash, check or a pledge slip)
+     online = card, digital wallet or Venmo
+     freeVotes are the one-per-device votes, worth $0. */
   const DANCERS = [
-    { id:1, slug:'riley-taylor',      name:'Riley Taylor',      votes:4120, dollars:3080 },
-    { id:2, slug:'latosha-anderson',  name:'Latosha Anderson',  votes:3870, dollars:2890 },
-    { id:3, slug:'mirryn-morrill',    name:'Mirryn Morrill',    votes:3655, dollars:2730 },
-    { id:4, slug:'nicole-funderburk', name:'Nicole Funderburk', votes:3290, dollars:2460 },
-    { id:5, slug:'rochell-topham',    name:'Rochell Topham',    votes:2980, dollars:2225 },
-    { id:6, slug:'dave-mcintyre',     name:'Dave McIntyre',     votes:2645, dollars:1975 },
-    { id:7, slug:'brady-williams',    name:'Brady Williams',    votes:2310, dollars:1725 },
-    { id:8, slug:'declan-mcginty',    name:'Declan McGinty',    votes:1905, dollars:1420 }
+    { id:1, slug:'riley-taylor',      name:'Riley Taylor',      votes:4120, freeVotes:180, cashGifts:22, cashDollars:980, onlineGifts:64, onlineDollars:2100 },
+    { id:2, slug:'latosha-anderson',  name:'Latosha Anderson',  votes:3870, freeVotes:164, cashGifts:19, cashDollars:910, onlineGifts:58, onlineDollars:1980 },
+    { id:3, slug:'mirryn-morrill',    name:'Mirryn Morrill',    votes:3655, freeVotes:151, cashGifts:17, cashDollars:820, onlineGifts:55, onlineDollars:1910 },
+    { id:4, slug:'nicole-funderburk', name:'Nicole Funderburk', votes:3290, freeVotes:138, cashGifts:16, cashDollars:760, onlineGifts:49, onlineDollars:1700 },
+    { id:5, slug:'rochell-topham',    name:'Rochell Topham',    votes:2980, freeVotes:126, cashGifts:15, cashDollars:690, onlineGifts:44, onlineDollars:1535 },
+    { id:6, slug:'dave-mcintyre',     name:'Dave McIntyre',     votes:2645, freeVotes:109, cashGifts:21, cashDollars:835, onlineGifts:33, onlineDollars:1140 },
+    { id:7, slug:'brady-williams',    name:'Brady Williams',    votes:2310, freeVotes:97,  cashGifts:11, cashDollars:505, onlineGifts:35, onlineDollars:1220 },
+    { id:8, slug:'declan-mcginty',    name:'Declan McGinty',    votes:1905, freeVotes:88,  cashGifts:8,  cashDollars:330, onlineGifts:31, onlineDollars:1090 }
   ];
+
+  /* dollars is DERIVED, never stored. This is the guard against the bug where
+     the public total summed votes: there is no d.dollars to assign to, so a
+     gift has to be written into the bucket it actually came from. */
+  DANCERS.forEach(d => Object.defineProperty(d, 'dollars', {
+    enumerable: true,
+    get(){ return d.cashDollars + d.onlineDollars; }
+  }));
+
+  /* The one place a gift is recorded. channel is 'free', 'cash' or 'online'. */
+  function record(dancer, { votes = 0, amount = 0, channel = 'online', gifts = 1 }){
+    const d = typeof dancer === 'string' ? DANCERS.find(x => x.name === dancer) : dancer;
+    if (!d) return null;
+    d.votes += votes;
+    if (channel === 'free'){ d.freeVotes += votes; return d; }
+    if (channel === 'cash'){ d.cashDollars   += amount; d.cashGifts   += gifts; }
+    else                   { d.onlineDollars += amount; d.onlineGifts += gifts; }
+    return d;
+  }
+
+  const paidVotes = d => d.votes - d.freeVotes;
+  const totals = () => DANCERS.reduce((t, d) => ({
+    dollars:     t.dollars     + d.dollars,
+    votes:       t.votes       + d.votes,
+    freeVotes:   t.freeVotes   + d.freeVotes,
+    cashGifts:   t.cashGifts   + d.cashGifts,
+    cashDollars: t.cashDollars + d.cashDollars,
+    onlineGifts: t.onlineGifts + d.onlineGifts,
+    onlineDollars: t.onlineDollars + d.onlineDollars
+  }), { dollars:0, votes:0, freeVotes:0, cashGifts:0, cashDollars:0, onlineGifts:0, onlineDollars:0 });
   const raised = () => DANCERS.reduce((s, d) => s + d.dollars, 0);
   const rankVal = d => EVENT.rankBy === 'votes' ? d.votes : d.dollars;
   const standings = () => [...DANCERS].sort((a, b) => rankVal(b) - rankVal(a));
@@ -103,5 +137,5 @@ window.CJC = (function () {
   const plain = n => '$' + Math.round(n).toLocaleString('en-US');
 
   return { EVENT, DANCERS, JUDGES, BUNDLES, FEE, DISPLAY, feeFor, raised, voteTotal,
-           rankVal, standings, photo, money, plain };
+           rankVal, standings, record, paidVotes, totals, photo, money, plain };
 })();

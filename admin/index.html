@@ -136,6 +136,28 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--gold-bright);ou
 .log div:last-child{border-bottom:0}
 .log em{color:var(--muted);font-style:normal}
 
+/* ---- standings ---- */
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);margin:var(--s4) 0 0}
+.sum div{padding:11px 6px;border-radius:var(--r-sm);background:var(--ink);border:1px solid var(--line);text-align:center}
+.sum b{display:block;font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.15}
+.sum span{display:block;font-size:10.5px;color:var(--faint);line-height:1.3;margin-top:3px}
+.sd{padding:var(--s4);border-radius:var(--r-md);background:var(--raised);border:1px solid var(--line)}
+.sd.top{border-color:rgba(216,169,75,0.34);background:linear-gradient(180deg,var(--float),var(--raised))}
+.sd-h{display:grid;grid-template-columns:24px 1fr auto;gap:var(--s3);align-items:baseline}
+.sd-h .r{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--faint);text-align:center}
+.sd.top .sd-h .r{color:var(--gold-bright)}
+.sd-h .nm{font-size:15px;font-weight:600;letter-spacing:-0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sd-h .m{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--gold-bright)}
+.sd-bar{height:5px;border-radius:999px;background:rgba(244,239,232,0.08);margin:var(--s3) 0;overflow:hidden}
+.sd-bar i{display:block;height:100%;border-radius:999px;transform-origin:left center;
+  background:linear-gradient(90deg,#8C1C2C,#C9283C 42%,#E07A2C 74%,#EFC247)}
+.sd-g{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);text-align:center}
+.sd-g div{padding:8px 4px;border-radius:var(--r-sm);background:var(--ink)}
+.sd-g b{display:block;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.2}
+.sd-g span{display:block;font-size:10px;color:var(--faint);line-height:1.3;margin-top:2px}
+.sd-f{display:flex;justify-content:space-between;gap:var(--s3);font-size:11.5px;color:var(--faint);
+  margin-top:var(--s3);font-variant-numeric:tabular-nums}
+
 /* ---- tabs ---- */
 nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(12,10,16,0.92);
   backdrop-filter:blur(16px);border-top:1px solid var(--line);
@@ -247,7 +269,9 @@ nav button.on{color:var(--gold-bright)}
         <h2>Live standings</h2>
         <p class="sub">Staff only. The room sees the money climbing, not this, unless you switch standings on in Controls. Ranked on money raised, so a farmed free vote cannot move anyone up the board. The vote count beside each name is higher, because bundles carry bonus votes and the free vote adds one.</p>
         <div class="kv tot" style="margin-top:0;border-top:0;padding-top:0"><span>Raised tonight</span><b id="st-total">$0</b></div>
-        <div class="rows" id="stand" style="margin-top:var(--s4)"></div>
+        <div class="sum" id="st-sum"></div>
+        <div class="rows" id="stand" style="margin-top:var(--s5)"></div>
+        <button class="btn btn-ghost" style="margin-top:var(--s5)" id="st-csv">Export standings CSV</button>
       </div>
     </section>
 
@@ -308,11 +332,18 @@ const DANCERS = CJC.DANCERS.map(d => d.name);
 /* Manual credits are real money, so they move the dancer's totals too and the
    big screen jumps the moment a clerk enters cash. $1 is 1 vote, with no bonus:
    bundles only exist on the card path. */
-function applyToDancer(name, amount){
-  const d = CJC.DANCERS.find(x => x.name === name);
-  if (!d) return;
-  d.dollars += amount;
-  d.votes   += amount;
+/* Cash, checks and pledge slips are taken at a table, so they count as a
+   person who gave cash. The card reader and Venmo are card rails, so they
+   count with the online gifts. $1 is 1 vote with no bonus: bundles only
+   exist on the self-serve path. */
+const CASH_METHODS = ['Cash', 'Check', 'Pledge'];
+function applyToDancer(name, amount, method, gifts){
+  CJC.record(name, {
+    votes: amount,
+    amount,
+    gifts: gifts === undefined ? 1 : gifts,
+    channel: CASH_METHODS.includes(method) ? 'cash' : 'online'
+  });
 }
 const PINS = { '1111':'Cash table 1', '2222':'Cash table 2', '3333':'Cash table 3', '9999':'Lead admin' };
 const METHODS = ['Cash','Check','Card reader','Pledge'];
@@ -432,7 +463,7 @@ $('#submit').addEventListener('click', () => {
   const dancer = $('#d').value, note = $('#note').value.trim();
   if (amt >= BIG && !confirm('Confirm ' + money(amt) + ' in ' + method.toLowerCase() + ' for ' + dancer + '?')) return;
   entries.unshift({ id:Date.now(), who:me, dancer, amount:amt, method, note, t:now(), void:false });
-  applyToDancer(dancer, amt);
+  applyToDancer(dancer, amt, method);
   audit('credited ' + money(amt) + ' (' + method + ') to ' + dancer + (note ? ' [' + note + ']' : ''));
   toast(money(amt) + ' credited to ' + dancer.split(' ')[0]);
   amt = 0; $('#note').value = ''; drawAmt(); drawList(); drawRecon();
@@ -457,7 +488,7 @@ $('#vq').addEventListener('click', e => {
   v.state = ok ? 'confirmed' : 'reversed';
   if (ok){
     entries.unshift({ id:Date.now(), who:me, dancer:v.dancer, amount:v.amount, method:'Venmo', note:v.code, t:now(), void:false });
-    applyToDancer(v.dancer, v.amount);
+    applyToDancer(v.dancer, v.amount, 'Venmo');
   }
   audit((ok ? 'confirmed ' : 'reversed ') + code + ' (' + money(v.amount) + ', ' + v.dancer + ')');
   toast(ok ? code + ' confirmed' : code + ' reversed');
@@ -483,7 +514,7 @@ $('#list').addEventListener('click', e => {
   const en = entries.find(x => x.id === Number(b.dataset.v));
   if (!confirm('Reverse ' + money(en.amount) + ' for ' + en.dancer + '? This posts an offsetting entry.')) return;
   en.void = true;
-  applyToDancer(en.dancer, -en.amount);
+  applyToDancer(en.dancer, -en.amount, en.method, -1);
   audit('reversed ' + money(en.amount) + ' for ' + en.dancer);
   toast('Entry reversed');
   drawList(); drawRecon();
@@ -516,22 +547,46 @@ Object.entries(TOGGLES).forEach(([id, { flag, label }]) => {
 $('#vstate').textContent = CJC.DISPLAY.voting.get() ? 'Voting open' : 'Voting closed';
 $('#vstate').classList.toggle('on', CJC.DISPLAY.voting.get());
 
+const num = n => n.toLocaleString('en-US');
 function drawStandings(){
-  const list = CJC.standings();
-  const lead = CJC.rankVal(list[0]);
-  $('#st-total').textContent = CJC.plain(CJC.raised());
+  const list = CJC.standings(), lead = CJC.rankVal(list[0]), t = CJC.totals();
+  $('#st-total').textContent = CJC.plain(t.dollars);
+  $('#st-sum').innerHTML =
+    `<div><b>${num(t.freeVotes)}</b><span>free votes</span></div>` +
+    `<div><b>${num(t.cashGifts)}</b><span>gave cash</span></div>` +
+    `<div><b>${num(t.onlineGifts)}</b><span>gave online</span></div>`;
   $('#stand').innerHTML = list.map((d,i) => `
-    <div class="item">
-      <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:700;width:22px;text-align:center;color:${i===0?'var(--gold-bright)':'var(--faint)'}">${i+1}</div>
-      <div class="g">
-        <b>${d.name}</b>
-        <div style="height:5px;border-radius:999px;background:rgba(244,239,232,0.08);margin-top:6px;overflow:hidden">
-          <i style="display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#8C1C2C,#C9283C 42%,#E07A2C 74%,#EFC247);transform:scaleX(${(CJC.rankVal(d)/lead).toFixed(3)});transform-origin:left"></i>
-        </div>
+    <div class="sd ${i===0?'top':''}">
+      <div class="sd-h">
+        <span class="r">${i+1}</span>
+        <span class="nm">${d.name}</span>
+        <span class="m">${CJC.plain(d.dollars)}</span>
       </div>
-      <span class="v" style="text-align:right"><span style="display:block">${CJC.plain(d.dollars)}</span><small style="display:block;font-size:11px;color:var(--faint);font-family:Inter,sans-serif;font-weight:500">${d.votes.toLocaleString('en-US')} votes</small></span>
+      <div class="sd-bar"><i style="transform:scaleX(${(CJC.rankVal(d)/lead).toFixed(3)})"></i></div>
+      <div class="sd-g">
+        <div><b>${num(d.freeVotes)}</b><span>free votes</span></div>
+        <div><b>${num(d.cashGifts)}</b><span>gave cash</span></div>
+        <div><b>${num(d.onlineGifts)}</b><span>gave online</span></div>
+      </div>
+      <div class="sd-f">
+        <span>${CJC.plain(d.cashDollars)} cash &middot; ${CJC.plain(d.onlineDollars)} online</span>
+        <span>${num(d.votes)} votes, ${num(CJC.paidVotes(d))} paid</span>
+      </div>
     </div>`).join('');
 }
+
+$('#st-csv').addEventListener('click', () => {
+  const rows = [['Rank','Dancer','Dollars raised','Cash $','Online $','People who gave cash',
+                 'People who gave online','Free votes','Paid votes','Total votes']];
+  CJC.standings().forEach((d,i) => rows.push([i+1, d.name, d.dollars, d.cashDollars, d.onlineDollars,
+    d.cashGifts, d.onlineGifts, d.freeVotes, CJC.paidVotes(d), d.votes]));
+  const t = CJC.totals();
+  rows.push(['','TOTAL', t.dollars, t.cashDollars, t.onlineDollars, t.cashGifts, t.onlineGifts,
+             t.freeVotes, t.votes - t.freeVotes, t.votes]);
+  audit('exported standings CSV');
+  toast('Standings CSV exported');
+  console.log(rows.map(r => r.join(',')).join('\n'));
+});
 setInterval(() => { if (me) drawStandings(); }, 2000);
 
 /* ---------------- reconcile ---------------- */

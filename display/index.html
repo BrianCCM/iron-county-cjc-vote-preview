@@ -200,8 +200,8 @@ addEventListener('keydown', e => {
 setInterval(() => {
   const d = DANCERS[Math.floor(Math.random()*DANCERS.length)];
   const cash = [5,20,50,100][Math.floor(Math.random()*4)];
-  d.dollars += cash;
-  d.votes   += ({5:5, 20:25, 50:75, 100:175})[cash];
+  CJC.record(d, { votes:({5:5, 20:25, 50:75, 100:175})[cash], amount:cash,
+                  channel: Math.random() < 0.25 ? 'cash' : 'online' });
   lastBumped = d.id;
   drawBoard(); drawMoney();
   setTimeout(() => { lastBumped = null; drawBoard(); }, 700);

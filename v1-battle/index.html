@@ -407,7 +407,7 @@ p{margin:0}
 
     <footer class="foot">
       <p class="bill">Dancing with the Community Stars</p>
-      <p class="when">Monday, November 17 &middot; Doors 6:00 PM &middot; Show 7:00 PM</p>
+      <p class="when">Tuesday, November 17 &middot; Doors 6:00 PM &middot; Show 7:00 PM</p>
       Heritage Center Theatre, 105 N 100 E, Cedar City<br>
       Tickets $15 at State Bank, ERA Realty Center or any Community Star.<br>
       Questions? <a href="tel:4355901317">Jennifer Davis, 435-590-1317</a>
@@ -658,9 +658,8 @@ function recalc(){
   btn.textContent = 'Continue to payment';
 }
 
-function award(n, cash, label){
-  S.dancer.votes   += n;
-  S.dancer.dollars += cash;
+function award(n, cash, channel, label){
+  CJC.record(S.dancer, { votes:n, amount:cash, channel });
   S.mine += n;
   localStorage.setItem('cjc_mine', S.mine);
   $('#my-votes').textContent = S.mine.toLocaleString('en-US');
@@ -689,7 +688,7 @@ document.addEventListener('keydown', e => {
 
 $('#free-btn').addEventListener('click', () => {
   S.free = true; localStorage.setItem('cjc_free','1');
-  drawFree(); award(1, 0, 'Free vote counted');
+  drawFree(); award(1, 0, 'free', 'Free vote counted');
 });
 $('#feechk').addEventListener('change', e => { S.coverFee = e.target.checked; recalc(); });
 $('#to-pay').addEventListener('click', () => { $('#venmo').hidden = true; go('pay'); });
@@ -706,12 +705,12 @@ function handlePay(btn){
     alert('In the live site this opens Venmo with the amount and the reference code already filled in.');
     return;
   }
-  if (kind === 'venmo-sent') return award(b.votes, b.amt, 'Votes counted, pending confirmation');
+  if (kind === 'venmo-sent') return award(b.votes, b.amt, 'online', 'Votes counted, pending confirmation');
 
   const was = btn.innerHTML;
   btn.innerHTML = '<span class="word" style="font-size:16px;font-weight:600">Processing</span>';
   btn.disabled = true;
-  setTimeout(() => { btn.innerHTML = was; btn.disabled = false; award(b.votes, b.amt); }, 1100);
+  setTimeout(() => { btn.innerHTML = was; btn.disabled = false; award(b.votes, b.amt, 'online'); }, 1100);
 }
 
 /* live drift so the room feels alive during a walkthrough */
@@ -719,8 +718,8 @@ setInterval(() => {
   if (!document.hidden){
     const d = DANCERS[Math.floor(Math.random()*DANCERS.length)];
     const cash = [5,20,50][Math.floor(Math.random()*3)];
-    d.dollars += cash;
-    d.votes   += ({5:5, 20:25, 50:75})[cash];
+    CJC.record(d, { votes:({5:5, 20:25, 50:75})[cash], amount:cash,
+                    channel: Math.random() < 0.25 ? 'cash' : 'online' });
     drawBoard();
   }
 }, 3400);
