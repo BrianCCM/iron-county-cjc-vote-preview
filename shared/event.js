@@ -129,7 +129,14 @@ window.CJC = (function () {
     standings : flag('cjc_pub_standings', false),  // ranks and bars, publicly
     dollars   : flag('cjc_pub_dollars',   false),  // per dancer dollar amounts
     voting    : flag('cjc_voting_open',   true),
-    power     : flag('cjc_power_hour',    false)
+    power     : flag('cjc_power_hour',    false),
+
+    /* Venmo kill switch. Venmo can freeze an account mid-event if its
+       heuristics read a few hundred similar inbound payments as commercial
+       activity, and a freeze blocks receiving AND withdrawal. If that happens
+       on the night, turn this off from Controls and the button disappears
+       everywhere at once, with no deploy. */
+    venmo     : flag('cjc_venmo_on',      true)
   };
 
   const photo = d => '../images/people/' + d.slug + '.webp';

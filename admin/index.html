@@ -293,6 +293,10 @@ nav button.on{color:var(--gold-bright)}
           <button class="toggle" id="t-reveal" aria-pressed="false"><span class="sr">Reveal totals</span></button>
         </div>
         <div class="sw">
+          <div><b>Accept Venmo</b><small>Switch off the moment Venmo freezes or the queue falls behind. The button leaves the voting page within two seconds</small></div>
+          <button class="toggle" id="t-venmo" aria-pressed="true"><span class="sr">Accept Venmo</span></button>
+        </div>
+        <div class="sw">
           <div><b>Power hour</b><small>Every vote counts double until switched off</small></div>
           <button class="toggle" id="t-power" aria-pressed="false"><span class="sr">Power hour</span></button>
         </div>
@@ -527,7 +531,8 @@ const TOGGLES = {
   't-vote':      { flag: CJC.DISPLAY.voting,    label: 'voting' },
   't-standings': { flag: CJC.DISPLAY.standings, label: 'standings for the room' },
   't-reveal':    { flag: CJC.DISPLAY.dollars,   label: 'dollar totals' },
-  't-power':     { flag: CJC.DISPLAY.power,     label: 'power hour' }
+  't-power':     { flag: CJC.DISPLAY.power,     label: 'power hour' },
+  't-venmo':     { flag: CJC.DISPLAY.venmo,     label: 'Venmo' }
 };
 Object.entries(TOGGLES).forEach(([id, { flag, label }]) => {
   const b = $('#' + id);

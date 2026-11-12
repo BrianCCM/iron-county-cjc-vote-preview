@@ -480,7 +480,7 @@ p{margin:0}
       <button class="pay pay-apple" data-pay="apple" aria-label="Pay with Apple Pay"></button>
       <div class="wallets">
         <button class="pay pay-google" data-pay="google" aria-label="Pay with Google Pay"></button>
-        <button class="pay pay-venmo" data-pay="venmo" aria-label="Pay with Venmo"></button>
+        <button class="pay pay-venmo" data-pay="venmo" aria-label="Pay with Venmo" id="venmo-btn"></button>
       </div>
       <div class="or">or</div>
       <button class="btn btn-ghost" data-pay="card">Pay with card</button>
@@ -524,7 +524,7 @@ p{margin:0}
       <li><span class="num">1</span><div><b>Pick your star</b><p>Tap any dancer in the lineup. You can give to more than one.</p></div></li>
       <li><span class="num">2</span><div><b>Cast your free vote</b><p>Everyone gets one free vote per device. No payment, no sign up.</p></div></li>
       <li><span class="num">3</span><div><b>Add more votes</b><p>$1 is 1 vote. The bundles carry bonus votes, so $20 gets you 25 and $50 gets you 75.</p></div></li>
-      <li><span class="num">4</span><div><b>Pay however suits you</b><p>Apple Pay, Google Pay, card or Venmo. Prefer cash or a check? Hand it to a volunteer at one of the tables and there is no processing fee at all.</p></div></li>
+      <li><span class="num">4</span><div><b>Pay however suits you</b><p><span id="help-venmo">Apple Pay, Google Pay, card or Venmo.</span> Prefer cash or a check? Hand it to a volunteer at one of the tables and there is no processing fee at all.</p></div></li>
     </ol>
     <div class="remote">
       <b>Watching from home?</b>
@@ -691,7 +691,20 @@ $('#free-btn').addEventListener('click', () => {
   drawFree(); award(1, 0, 'free', 'Free vote counted');
 });
 $('#feechk').addEventListener('change', e => { S.coverFee = e.target.checked; recalc(); });
-$('#to-pay').addEventListener('click', () => { $('#venmo').hidden = true; go('pay'); });
+$('#to-pay').addEventListener('click', () => { $('#venmo').hidden = true; applyVenmoSwitch(); go('pay'); });
+
+/* Hides every Venmo affordance if the board has switched it off, so a frozen
+   Venmo account can be taken off the page mid-event without a deploy. */
+function applyVenmoSwitch(){
+  const on = CJC.DISPLAY.venmo.get();
+  $('#venmo-btn').style.display = on ? '' : 'none';
+  $('.wallets').style.gridTemplateColumns = on ? '1fr 1fr' : '1fr';
+  if (!on) $('#venmo').hidden = true;
+  $('#help-venmo').textContent = on
+    ? 'Apple Pay, Google Pay, card or Venmo.'
+    : 'Apple Pay, Google Pay or card.';
+}
+setInterval(applyVenmoSwitch, 2000);
 
 function handlePay(btn){
   const kind = btn.dataset.pay, b = BUNDLES[S.bundle];
@@ -725,6 +738,7 @@ setInterval(() => {
 }, 3400);
 
 CJC.paintWallets();
+applyVenmoSwitch();
 $('#goal').textContent = plain(EVENT.goal);
 $('#my-votes').textContent = S.mine.toLocaleString('en-US');
 $('#sticky').style.display = 'none';
