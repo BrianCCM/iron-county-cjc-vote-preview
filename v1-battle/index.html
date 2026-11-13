@@ -139,7 +139,7 @@ p{margin:0}
 
 /* ---------- leaderboard ---------- */
 .board{display:flex;flex-direction:column;gap:var(--s3);list-style:none;margin:0;padding:0}
-.row{position:relative;display:grid;grid-template-columns:38px 56px 1fr auto;gap:var(--s3);
+.row{position:relative;display:grid;grid-template-columns:38px 78px 1fr auto;gap:var(--s4);
   align-items:center;width:100%;text-align:left;padding:var(--s3);border-radius:var(--r-md);
   background:var(--stage);border:1px solid var(--line);cursor:pointer;font-family:inherit;
   color:inherit;box-shadow:var(--e-1);overflow:hidden;
@@ -153,7 +153,7 @@ p{margin:0}
 .rank{font-family:Anton,Impact,sans-serif;font-size:25px;color:var(--faint);text-align:center;
   line-height:1;font-variant-numeric:tabular-nums}
 .row.lead .rank{color:var(--gold-bright)}
-.ava{width:56px;height:56px;border-radius:var(--r-sm);overflow:hidden;position:relative;background:var(--amp)}
+.ava{width:78px;height:78px;border-radius:10px;overflow:hidden;position:relative;background:var(--amp)}
 .ava img{width:100%;height:100%;object-fit:cover;display:block}
 .ava::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.42),transparent 58%)}
 .who{min-width:0}
@@ -169,7 +169,7 @@ p{margin:0}
 .row:hover .go{transform:translateX(3px);color:var(--gold-bright)}
 
 /* ---------- lineup with standings hidden ---------- */
-.row.plain{grid-template-columns:56px 1fr auto}
+.row.plain{grid-template-columns:78px 1fr auto}
 .row.plain .bar{display:none}
 .helpbtn{display:inline-flex;align-items:center;gap:7px;background:var(--riser);
   border:1px solid var(--line-strong);color:var(--text);font-family:inherit;font-size:13.5px;
@@ -223,7 +223,7 @@ p{margin:0}
   box-shadow:var(--e-2);position:relative;overflow:hidden}
 .stage::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;
   background:linear-gradient(90deg,var(--red-deep),var(--red) 35%,var(--orange) 68%,var(--gold))}
-.portrait{width:112px;height:112px;border-radius:50%;overflow:hidden;flex-shrink:0;
+.portrait{width:clamp(130px,34vw,156px);aspect-ratio:1;border-radius:50%;overflow:hidden;flex-shrink:0;
   border:3px solid var(--gold);background:var(--amp)}
 .portrait img{width:100%;height:100%;object-fit:cover;display:block}
 .stage .who2{min-width:0}
@@ -368,7 +368,7 @@ p{margin:0}
 <div class="rail rail-l" aria-hidden="true"><img src="../images/art/art-guitar-left.webp" alt=""></div>
 <div class="rail rail-r" aria-hidden="true"><img src="../images/art/art-guitar-right.webp" alt=""></div>
 
-<div class="proto">Prototype for review. Real lineup, photos lifted from the event poster. No real payments are processed.</div>
+<div class="proto">Prototype for review. Real lineup and real photos. No real payments are processed.</div>
 
 <header class="mast">
   <div class="mast-in">
@@ -422,7 +422,7 @@ p{margin:0}
   <section class="view" id="v-dancer">
     <button class="back" data-go="home">&larr; The lineup</button>
     <div class="stage">
-      <div class="portrait"><img id="d-img" alt="" width="112" height="112"></div>
+      <div class="portrait"><img id="d-img" alt="" width="156" height="156"></div>
       <div class="who2">
         <h2 id="d-name">Dancer</h2>
         <span class="pill" id="d-rank">#1</span>
@@ -571,7 +571,7 @@ function drawBoard(){
   $('#board').innerHTML = list.map((d,i) => `
     <li><button class="row ${open ? (i===0?'lead':'') : 'plain'}" data-id="${d.id}">
       ${open ? `<span class="rank">${i+1}</span>` : ''}
-      <span class="ava"><img src="${photo(d)}" alt="" width="56" height="56" loading="lazy"></span>
+      <span class="ava"><img src="${photo(d)}" alt="" width="78" height="78" loading="lazy"></span>
       <span class="who">
         <b>${d.name}</b>
         ${open ? `<span class="bar"><i style="transform:scaleX(${Math.max(0.08, CJC.rankVal(d)/lead).toFixed(3)})"></i></span>` : ''}
